@@ -22,9 +22,6 @@ defaults:
 theme: jekyll-theme-cayman
 
 
-title: Xiang Li
-description: Xiang Li's homepage
-
 show_downloads: false
 google_analytics: G-55SCBLWWL4
 markdown: kramdown
