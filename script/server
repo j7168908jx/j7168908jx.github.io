@@ -1,0 +1,5 @@
+#!/bin/sh
+# start server locally
+
+bundle exec jekyll serve --port=34000
+
