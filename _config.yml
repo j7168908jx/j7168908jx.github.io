@@ -1,10 +1,35 @@
+collections:
+  pages:
+    output: true
+    permalink: /:title.html
+  posts:
+    output: true
+    permalink: /posts/:year/:month/:title.html
 
-remote_theme: pages-themes/cayman@v0.2.0
-plugins:
-- jekyll-remote-theme # add this line to the plugins list if you already have one
+defaults:
+  -
+    scope:
+      path: "posts"
+    values:
+      layout: "post"
+
+
+# the `theme` variable can be set via `remote_theme`
+# remote_theme: pages-themes/cayman@v0.2.0
+# plugins:
+# - jekyll-remote-theme # add this line to the plugins list if you already have one
+
+theme: jekyll-theme-cayman
+
 
 title: Xiang Li
 description: Xiang Li's homepage
 
 show_downloads: false
 google_analytics: G-55SCBLWWL4
+markdown: kramdown
+
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  math_engine: mathjax

@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# A small test suite to test if the theme itself works. run bootstrap once first
 set -e
 
 bundle exec jekyll build
