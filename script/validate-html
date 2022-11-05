@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# install dependency via `gem install w3c_validators` first
 require "w3c_validators"
 
 def validator(file)

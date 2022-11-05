@@ -1,6 +1,50 @@
 ---
 ---
-
 // Note: If you'd like to change the theme's Sass variables, you must set new values before the @import line in your stylesheet.
 
 @import 'jekyll-theme-cayman';
+
+.main-content {
+    line-height: 2;
+    max-width: 80rem;
+    font-size: 1.25rem;
+    margin-left: 10rem;
+    margin-right: 2rem;
+}
+
+.footer {
+    padding: 3em 2em;
+    margin-left: 10rem;
+}
+
+.sidebar {
+    height: 40%;
+    width: 10rem;
+    float: left;
+    position: -webkit-sticky;
+    position: sticky;
+    overflow: hidden;
+    left: 0;
+    top: 20%;
+    padding-top: 2rem;
+    padding-left: 2rem;
+    background-color: rgb(255, 255, 255);
+}
+
+
+.sidebar ul {
+    padding-left: 0px;
+}
+
+.sidebar li {
+    padding: 8px;
+    font-size: 16px;
+    display: block;
+}
+
+.sidebar .elegant-tree {
+    width: 125px;
+    height: 125px;
+    overflow: hidden;
+    display: block;
+}
