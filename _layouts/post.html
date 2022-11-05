@@ -15,7 +15,14 @@
               processRefs: true,
               processEnvironments: true
           },
-          TeX: { equationNumbers: { autoNumber: "AMS" } }
+          TeX: {
+            equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js", "color.js","autoload-all.js"],
+            Macros: {
+              RR: "{\\bf R}",
+              bold: ["{\\bf #1}",1]
+            }
+          }
       });
     </script>
     <script type="text/javascript" async
@@ -49,6 +56,12 @@
 
     <main id="content" class="main-content" role="main">
       {{ content }}
+      $\int_a^b\ket1 = 2\vert \langle \rangle $
+
+
+      \begin{equation}
+        f(x) = 123
+      \end{equation}
 
       <footer class="site-footer">
         {% if site.github.is_project_page %}
