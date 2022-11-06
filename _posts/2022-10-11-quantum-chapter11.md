@@ -276,9 +276,9 @@ Thus we may use the result from classical relative entropy to conclude.
 
 ### Basic properties of Von Neumann Entropy
 
-1) Entropy is non-negative. Entropy is 0 iff the state is pure.
-2) Entropy is at most $\log d$ in a $d$-dimensional Hilbert space. Equality iff the state is a completely mixed state $I/d$.
-3) Suppose a composite system $AB$ is in a pure state, then $S(A) = S(B)$.
+1. Entropy is non-negative. Entropy is 0 iff the state is pure.
+2. Entropy is at most $\log d$ in a $d$-dimensional Hilbert space. Equality iff the state is a completely mixed state $I/d$.
+3. Suppose a composite system $AB$ is in a pure state, then $S(A) = S(B)$.
 
 ---
 
@@ -313,9 +313,9 @@ where $\lambda_i$ are non-negative real numbers known as *Schmidt co-efficients*
 
 ---
 
-4) Suppose $p_i$ are probabilities, and the states $\rho_i$ have support on orthogonal subspaces. Then
+4. Suppose $p_i$ are probabilities, and the states $\rho_i$ have support on orthogonal subspaces. Then
 $$ S\left(\sum_i p_i\rho_i\right) = H(p_i)+\sum_i p_iS(\rho_i).$$
-5) (**Joint entropy theorem**) Suppose $p_i$ are probs, $\ket{i}$ are orthogonal states for a system $A$, and $\rho_i$ is any set of density operators for another system $B$. Then
+5. (**Joint entropy theorem**) Suppose $p_i$ are probs, $\ket{i}$ are orthogonal states for a system $A$, and $\rho_i$ is any set of density operators for another system $B$. Then
 $$ S\left(\sum_i p_i\ket{i}\bra{i}\otimes \rho_i\right) = H(p_i)+\sum_i p_iS(\rho_i).$$
 
 ---
@@ -330,7 +330,7 @@ S(\sum_i p_i\rho_i) &= -\sum_{ij}p_i\lambda_i^j \log (p_i \lambda_i^j)\\
 
 ---
 
-6) $S(\rho\otimes\sigma) = S(\rho) + S(\sigma)$.
+6. $S(\rho\otimes\sigma) = S(\rho) + S(\sigma)$.
 
 This is a immediate result from 5.
 
