@@ -1,0 +1,32 @@
+---
+---
+
+.main-content div.highlight {
+    background-color: #fff;
+}
+
+.main-content img.float-right  {
+    display: block;
+    float: right;
+    clear: both;
+    margin-left: 4rem;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+}
+
+.main-content img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.main-content img + em {
+    display: block;
+    text-align: center;
+}
+
+.main-content img.float-right + em {
+    float: right;
+    clear: both;
+    margin-top: -2rem;
+    margin-bottom: 3rem;
+}

@@ -12,6 +12,16 @@
     margin-right: 2rem;
 }
 
+.main-content .listing li span {
+    float: right;
+}
+
+.main-content .listing li .post-excerpt {
+    padding-top: 0.5rem;
+    font-size: 0.95rem;
+    max-width: 40rem;
+}
+
 .footer {
     padding: 3em 2em;
     margin-left: 10rem;

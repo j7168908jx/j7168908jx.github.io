@@ -3,20 +3,19 @@ layout: default
 published: true
 description: Find interesting (?) posts here
 title: Post List
+subtitle: "Xiang Li's Homepage"
 ---
 
-<h2>
-    Sort by post tags
-</h2>
+<!-- <h2>Sort by post tags</h2> -->
 
 {% for tag in site.tags %}
 <h3>{{ tag[0] }}</h3>
-<ul>
+<ul class="listing">
     {% for post in tag[1] %}
     <li>
+        <span>{{ post.date | date: "%B %-d, %Y" }}</span>
         <a href="{{ post.url }}">{{ post.title }}</a>
-        <br />
-        {{ post.excerpt }}
+        <div class="post-excerpt">{{ post.excerpt }}</div>
     </li>
     {% endfor %}
 </ul>

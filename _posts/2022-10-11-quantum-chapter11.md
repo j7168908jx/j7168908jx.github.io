@@ -13,6 +13,7 @@ excerpt_separator: <!--more-->
 ---
 
 In this presentation slides we go through basic definitions in Chapter 11.
+
 <!--more-->
 
 ---
