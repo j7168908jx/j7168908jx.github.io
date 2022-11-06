@@ -7,9 +7,20 @@
 .main-content {
     line-height: 2;
     max-width: 80rem;
-    font-size: 1.25rem;
     margin-left: 10rem;
     margin-right: 2rem;
+
+    @include large {
+        font-size: 1.25rem;
+    }
+
+    @include medium {
+        font-size: 1.1rem;
+    }
+
+    @include small {
+        font-size: 0.9rem;
+    }
 }
 
 .main-content .listing li span {
