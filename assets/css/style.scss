@@ -7,19 +7,24 @@
 .main-content {
     line-height: 2;
     max-width: 80rem;
-    margin-left: 10rem;
     margin-right: 2rem;
 
     @include large {
         font-size: 1.25rem;
+        margin-left: 10rem;
+        padding: 2rem 6rem;
     }
 
     @include medium {
         font-size: 1.1rem;
+        margin-left: 6rem;
+        padding: 2rem 2rem;
     }
 
     @include small {
         font-size: 0.9rem;
+        margin-left: 2rem;
+        padding: 2rem 1rem;
     }
 }
 
@@ -35,38 +40,127 @@
 }
 
 .footer {
-    padding: 3em 2em;
-    margin-left: 10rem;
+    @include large {
+        padding: 3em 2em;
+        margin-left: 10rem;
+    }
+    @include medium {
+        padding: 1.5em 1em;
+        margin-left: 5rem;
+    }
+    @include small {
+        padding: 1em 0.5em;
+        margin-left: 1rem;
+    }
+
 }
 
 .sidebar {
-    height: 40%;
-    width: 10rem;
-    float: left;
-    position: -webkit-sticky;
-    position: sticky;
     overflow: hidden;
-    left: 0;
-    top: 20%;
-    padding-top: 2rem;
-    padding-left: 2rem;
     background-color: rgb(255, 255, 255);
+
+    @include large {
+        width: 12rem;
+        position: -webkit-sticky;
+        position: sticky;
+        float: left;
+        left: 0;
+        top: 20%;
+        height: 40%;
+        text-align: center;
+    }
+
+    @include medium {
+        width: 6rem;
+        position: -webkit-sticky;
+        position: sticky;
+        float: left;
+        left: 0;
+        top: 20%;
+        height: 40%;
+        text-align: center;
+    }
+
+    @include small {
+        position: relative;
+        text-align: center;
+        margin-bottom: 0.8rem;
+        padding-bottom: 0.8rem;
+    }
 }
 
-
 .sidebar ul {
-    padding-left: 0px;
+    padding: 0.5rem;
+    @include small {
+        margin: 2rem 2rem;
+    }
+}
+
+.sidebar ul:after {
+    @include small {
+        content: "";
+        background: rgb(193, 215, 213);
+        position: absolute;
+        bottom: 0;
+        left: 25%;
+        margin: auto;
+        width: 50%;
+        height: 1px;
+    }
 }
 
 .sidebar li {
-    padding: 8px;
-    font-size: 16px;
     display: block;
+
+    @include large {
+        padding: 0.5rem 0;
+        font-size: 1.1rem;
+    }
+
+    @include medium {
+        padding: 0.25rem 0;
+        font-size: 0.9rem;
+    }
+
+    @include small {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.9rem;
+    }
 }
 
 .sidebar .elegant-tree {
-    width: 125px;
-    height: 125px;
     overflow: hidden;
     display: block;
+    margin: auto;
+
+    @include large {
+        width: 8rem;
+        height: 8rem;
+    }
+
+    @include medium {
+        width: 5rem;
+        height: 5rem;
+    }
+
+    @include small {
+        width: 5rem;
+        height: 5rem;
+
+    }
+}
+
+.sidebar #elegant-tree-img {
+    @include large {
+        width: 16rem;
+        height: 16rem;
+    }
+    @include medium{
+        width: 10rem;
+        height: 10rem;
+    }
+    @include small{
+        width: 10rem;
+        height: 10rem;
+    }
 }
