@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang | default: "en-US" }}">
-  <head>
+<html lang="{{ site.lang | default: " en-US " }}">
+
+<head>
     <meta charset="UTF-8">
 
     <title>{{ page.title | default: site.title | default: site.github.repository_name }} | {{ page.subtitle | default: site.subtitle | default: "Posts" }}</title>
 
     <!-- The SEO tag works for Search Engine https://github.com/jekyll/jekyll-seo-tag -->
-{% seo %}
+    {% seo %}
 
     <!-- also include custom math macros -->
-    <script type="text/javascript" async
-      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML,/assets/js/custom-math.js">
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML,/assets/js/custom-math.js">
     </script>
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -20,24 +20,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
-    <link rel="stylesheet" href="{{ '/assets/css/post.css?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/post.css?v=' | append: site.github.build_revision | relative_url }}"> {% include head-custom.html %}
 
-    {% include head-custom.html %}
-    
-  </head>
+</head>
 
 
-  <body>
-    {% include header.html %}
-
-    {% include sidebar.html %}
-
+<body>
+    {% include header.html %} {% include sidebar.html %} {% include toc.html %}
     <main id="content" class="main-content" role="main">
-      {{ content }}
+        {{ content }}
     </main>
 
     {% include footer.html %}
 
 
-  </body>
+</body>
+
 </html>
