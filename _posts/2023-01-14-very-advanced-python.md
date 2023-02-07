@@ -14,4 +14,7 @@ layout: post-with-toc
   - What is GIL? What problem did the GIL solve for Python?
 
 
--
+## Designs
+
+- `NamedTuple` vs `DataClass`
+  https://stackoverflow.com/questions/51671699/data-classes-vs-typing-namedtuple-primary-use-cases
