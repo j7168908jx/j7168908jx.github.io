@@ -9,7 +9,7 @@ theme: gaia
 # headingDivider: 2
 math: katex
 title: "A Survey of Sparse Matrix Multiplication on GPUs (CUDA)"
-tag: High Performance Computing (GPU)
+tag: High-performance Computing
 # excerpt: "Presenation slides"
 excerpt_separator: <!--more-->
 ---
