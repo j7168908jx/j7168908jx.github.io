@@ -11,7 +11,7 @@ He showed me some hotspots on the flame graph for me to start.
 The problem seems somewhat related to Eigen's array/matrix conversion.
 Let's try it.
 
-![](/assets/img/2023-02-22-optimizing-eigen-code/claymation-of-a-programmer-during-crunch-time.webp)
+![](/assets/img/2023-02-22-optimizing-eigen-code/claymation-of-a-programmer-during-crunch-time.webp){: width="400"}
 <center>https://openart.ai/discovery/sd-1006285672442761266</center>
 
 The code itself can be abstracted like this [1a].
@@ -173,7 +173,7 @@ Function cost: 35391 us
 
 OHHHHHHHH! So the key is to reduce vector allocation(object allocation!)
 
-![OHHHHHH](/assets/img/2023-02-22-optimizing-eigen-code/ohhhh.jpg)
+![OHHHHHH](/assets/img/2023-02-22-optimizing-eigen-code/ohhhh.jpg){: width="600"}
 <center>https://i2.hdslb.com/bfs/archive/d3e7600b11dafede431d35e81e8422ff9747c2fd.jpg</center>
 
 Let's put it all into one!
@@ -362,8 +362,7 @@ Function cost: 7368494 us, iteration = 100M iter.
 These two show that there will not be much difference if we use or don't use `.array()` here.
 
 
-Back to optimizing, comparing to ```c++
-// [2h], if we unfold the vector add/sub...
+Back to optimizing, comparing to [2h], if we unfold the vector add/sub...
 
 ```c++
 // [2i]
