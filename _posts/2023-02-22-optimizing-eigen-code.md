@@ -7,16 +7,16 @@ layout: post
 ---
 
 It was this afternoon when my colleague came to me and told me my code was not performing well... in speed.
-He showed me some hotspots on the flamegraph for me to start.
-It looks that the problem is somewhat related to Eigen's array/matrix conversion.
+He showed me some hotspots on the flame graph for me to start.
+The problem seems somewhat related to Eigen's array/matrix conversion.
 Let's try it.
 
 ![](/assets/img/2023-02-22-optimizing-eigen-code/claymation-of-a-programmer-during-crunch-time.webp)
 <center>https://openart.ai/discovery/sd-1006285672442761266</center>
 
-The code itself can be somehow abstracted like this [1a].
-It is somehow equivalent to test if the smallest distance between two vectors is above a lower bound.
-It was designed to run on a relative large `n>=50` but currently the tests (in the business) focus mainly on `n` about 1, 2, or 3.
+The code itself can be abstracted like this [1a].
+It is equivalent to testing if the smallest distance between two vectors is above a lower bound.
+It was designed to run on a relatively large `n>=50,` but currently, the tests (in the business) focus mainly on `n` about 1, 2, or 3.
 
 Here we have some definitions before the following code snippet:
 
@@ -24,8 +24,8 @@ Here we have some definitions before the following code snippet:
 using vector = Eigen::VectorXd;
 ```
 
-`n` and `total_iters` are passed in as parameters in shell command.
-Some variables come in abbrivation. Hope that they will not affect reading.
+`n` and `total_iters` are passed in as parameters in the shell command.
+Some variables come in abbreviations. Hope that they will not affect the reading.
 
 ```c++
 // [1a]
@@ -54,7 +54,7 @@ Function cost: 109624 us
 Function cost: 103853 us
 ```
 
-Okay try to reduce the `.array()` operation:
+Okay, try to reduce the `.array()` operation:
 
 ```c++
 // [1b]
@@ -77,7 +77,7 @@ Function cost: 73070 us
 Function cost: 72077 us
 ```
 
-Wow. Why not again to reduce the `.array()` operation?
+Wow. Why not again reduce the `.array()` operation?
 
 ```c++
 // [1c]
@@ -104,7 +104,7 @@ Function cost: 71640 us
 Function cost: 70065 us
 ```
 
-Hmmm. Not that effective. But at least I know how to get rid of the vector `ee2`.
+Hmmm. Not that effective. But at least I know how to eliminate the vector `ee2`.
 
 
 ```c++
@@ -127,7 +127,7 @@ Function cost: 72205 us
 Function cost: 70529 us
 ```
 
-How about set aside some computation?
+How about setting aside some computation?
 
 ```c++
 // [1e]
@@ -150,7 +150,7 @@ Function cost: 72516 us
 Function cost: 70869 us
 ```
 
-Oh no that drastically reduce long vector operation speed. Let's get it back... and how about put more computation into the single statement?
+Oh no, that drastically reduces long vector operation speed. Let's get it back... and how about putting more computation into the single statement?
 
 ```c++
 // [1f]
@@ -176,7 +176,7 @@ OHHHHHHHH! So the key is to reduce vector allocation(object allocation!)
 ![OHHHHHH](/assets/img/2023-02-22-optimizing-eigen-code/ohhhh.jpg)
 <center>https://i2.hdslb.com/bfs/archive/d3e7600b11dafede431d35e81e8422ff9747c2fd.jpg</center>
 
-Let's put all into one!
+Let's put it all into one!
 
 ```c++
 // [1g]
@@ -196,7 +196,7 @@ Function cost: 35834 us
 Function cost: 35414 us
 ```
 
-Haha that's right. Eigen will allocate necessary space since the evaluation is actually complicated?
+Haha, that's right. Eigen will allocate the necessary temporary space for variables since the evaluation is too complicated to do without extra space.
 
 
 ```c++
@@ -217,10 +217,10 @@ Function cost: 882 us
 Function cost: 876 us
 ```
 
-EMMMMMMMMM??????????????????? What's happening???? I know it probably gives some speedup but ... what?
+EMMMMMMMMM??????????????????? What's happening???? I know it probably gives some speedup, but ... what?
 Add a safety check to ensure the computation is actually happening.
-Also, add more trial times to ensure total time will be in several seconds.
-(P.S. I changed from `gettimeofday` to `std::chrono` but find not much timing difference.)
+Also, add more trial times to ensure the total time will be in several seconds.
+(P.S. I changed from `gettimeofday` to `std::chrono` but found little timing difference.)
 
 ```c++
 // [2h]
@@ -247,7 +247,7 @@ Function cost: 356687 us, iteration = 100M iter.
 Function cost: 353405 us, iteration = 100M iter.
 ```
 
-The time cost does raise to something normal. Let's compare it to other previous versions.
+The time cost does rise to something normal. Let's compare it to other previous versions.
 
 ```c++
 // [2g]
@@ -274,7 +274,7 @@ Function cost: 703551 us, iteration = 100M iter.
 ```
 
 
-So it looks like the final optimization really has good effect. Let's test against the first version.
+So it looks like the final optimization really has a good effect. Let's test against the first version.
 
 ```c++
 // [2a]
@@ -303,8 +303,8 @@ Function cost: 10594569 us, iteration = 100M iter.
 ```
 
 
-So here we can see the initial version will cause great performance issue when the scale is small.
-This explains all why my colleague will complain about the code.
+Here we can see the initial version will cause significant performance issues when the scale is small.
+This explains why my colleague will complain about the code.
 
 
 ```c++
@@ -359,7 +359,7 @@ Function cost: 7492250 us, iteration = 100M iter.
 Function cost: 7368494 us, iteration = 100M iter.
 ```
 
-These two shows that there will be not much difference if we use or don't use `.array()` here.
+These two show that there will not be much difference if we use or don't use `.array()` here.
 
 
 Back to optimizing, comparing to ```c++
@@ -383,8 +383,8 @@ Function cost: 700923 us, iteration = 100M iter.
 Function cost: 370994 us, iteration = 100M iter.
 Function cost: 263239 us, iteration = 100M iter.
 ```
-Speeds for size 1 and size 2 vectors differ and it slightly costs more in size 2.
-(P.s. I have tested them so many times and the difference stablly exists.)
+Speeds for size 1 and size 2 vectors differ, and it costs slightly more for size 2.
+(P.s. I have tested them many times, and the difference still exists.)
 
 ```c++
 // [2j]
@@ -406,6 +406,6 @@ Function cost: 365841 us, iteration = 100M iter.
 Function cost: 263375 us, iteration = 100M iter.
 ```
 
-moving `e1` inside slightly (but stablly) increases the speed of size 2.
+Moving `e1` inside slightly (but stably) increases the speed of size 2.
 
-That's it! I think I don't have any simpler way to this one... Help me if you can beat this!
+That's it! I don't have any faster way to this one... Help me if you can beat this!
