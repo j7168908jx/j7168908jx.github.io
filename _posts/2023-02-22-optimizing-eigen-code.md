@@ -6,6 +6,8 @@ tag: "High-performance Computing"
 layout: post
 ---
 
+## Story 1
+
 It was this afternoon when my colleague came to me and told me my code was not performing well... in speed.
 He showed me some hotspots on the flame graph for me to start.
 The problem seems somewhat related to Eigen's array/matrix conversion.
@@ -26,6 +28,12 @@ using vector = Eigen::VectorXd;
 
 `n` and `total_iters` are passed in as parameters in the shell command.
 Some variables come in abbreviations. Hope that they will not affect the reading.
+
+Tests are conducted in the following way (GCC 9.4.0):
+
+```shell
+g++ -I../include/ --std=c++17 -Wall -O3 test.cpp -o test.x
+```
 
 ```c++
 // [1a]
@@ -408,3 +416,183 @@ Function cost: 263375 us, iteration = 100M iter.
 Moving `e1` inside slightly (but stably) increases the speed of size 2.
 
 That's it! I don't have any faster way to this one... Help me if you can beat this!
+
+===
+
+Full source code:
+
+```c++
+#include <iostream>
+#include <chrono>
+#include <numeric>
+#include <Eigen/Dense>
+#include <sys/time.h>
+
+#define NDEBUG
+
+typedef Eigen::VectorX<double> vector;
+
+int test_speed(int n, long long total_times) {
+
+    vector cu(n), u(n), uu(n);
+    cu(0) = 0.0000000;
+    double e1 = 1e-8, e2 = 1e-6, ch=1e-3, hh=1e-3;
+    vector ee2(n);
+    ee2.setConstant(e2);
+    std::vector<int> a(total_times, 0);
+
+    auto start = std::chrono::high_resolution_clock::now();
+    for (long long i = 0; i < total_times; ++i) {
+        a[i] = (((e1*u-e1*uu).cwiseAbs() - (cu / ch * hh - u * (1 + hh/ch) + uu).cwiseAbs())).minCoeff() >= -e2 * hh;
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+
+    std::cout << "Function cost: "
+        << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()
+        << " us, iteration = "
+        << (std::accumulate(a.begin(), a.end(), 0ll) / 1000000ll)
+        << "M iter." << std::endl;
+
+    return 0;
+}
+
+int main(int argc, char **argv)
+{
+    int n = std::atoi(argv[1]);
+    long long total_times = std::atoll(argv[2]) * 1000000;
+
+    test_speed(n, total_times);
+
+    return 0;
+}
+
+```
+
+
+
+## Story 2
+
+Similar to story 1, I'm now optimizing this one...
+
+```c++
+    vector cp(n), cx(n);
+    double er = 1e-5, ea = 1e-8;
+    std::vector<int> a(total_times, 0);
+
+    auto start = std::chrono::high_resolution_clock::now();
+    for (long long i = 0; i < total_times; ++i) {
+        Eigen::Array<double, Eigen::Dynamic, 1> ae = er * cx.cwiseAbs().eval().array().eval() + ea;
+        Eigen::Array<double, Eigen::Dynamic, 1> cpaa = cp.cwiseAbs().eval().array().eval();
+        a[i] = (ae - cpaa).minCoeff() < 0;
+        a[i] += (ae / 10.0 - cpaa).minCoeff() > 0;
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+
+```
+
+
+```shell
+$ ./test.x 1000 1 && ./test.x 100 10 && ./test.x 20 50 && ./test.x 10 100 && ./test.x 3 100 && ./test.x 2 100 && ./test.x 1 100
+Function cost: 5524422 us, iteration = 1M iter.
+Function cost: 7639461 us, iteration = 10M iter.
+Function cost: 18070642 us, iteration = 50M iter.
+Function cost: 20866130 us, iteration = 100M iter.
+Function cost: 19169880 us, iteration = 100M iter.
+Function cost: 18183112 us, iteration = 100M iter.
+Function cost: 17908789 us, iteration = 100M iter.
+```
+
+Let's remove the `.eval()` first.
+
+```c++
+    for (long long i = 0; i < total_times; ++i) {
+        Eigen::Array<double, Eigen::Dynamic, 1> ae = er * cx.cwiseAbs().array() + ea;
+        Eigen::Array<double, Eigen::Dynamic, 1> cpaa = cp.cwiseAbs().array();
+        a[i] = (ae - cpaa).minCoeff() < 0;
+        a[i] += (ae / 10.0 - cpaa).minCoeff() > 0;
+    }
+```
+
+
+```shell
+[xli@loginNode src]$ ./test.x 1000 1 && ./test.x 100 10 && ./test.x 20 50 && ./test.x 10 100 && ./test.x 3 100 && ./test.x 2 100 && ./test.x 1 100
+Function cost: 4380604 us, iteration = 1M iter.
+Function cost: 5027215 us, iteration = 10M iter.
+Function cost: 8743605 us, iteration = 50M iter.
+Function cost: 9736902 us, iteration = 100M iter.
+Function cost: 7918721 us, iteration = 100M iter.
+Function cost: 7697333 us, iteration = 100M iter.
+Function cost: 7433126 us, iteration = 100M iter.
+```
+
+Hmmm... So removing `.eval()` does make a difference? Why? Let's move the addition away.
+
+```c++
+    for (long long i = 0; i < total_times; ++i) {
+        Eigen::Array<double, Eigen::Dynamic, 1> ae = er * cx.cwiseAbs().array();
+        Eigen::Array<double, Eigen::Dynamic, 1> cpaa = cp.cwiseAbs().array();
+        a[i] = (ae - cpaa).minCoeff() < -ea;
+        a[i] += (ae / 10.0 - cpaa).minCoeff() > -ea / 10.0;
+    }
+```
+
+```shell
+[xli@loginNode src]$ ./test.x 1000 1 && ./test.x 100 10 && ./test.x 20 50 && ./test.x 10 100 && ./test.x 3 100 && ./test.x 2 100 && ./test.x 1 100
+Function cost: 3005192 us, iteration = 1M iter.
+Function cost: 3884175 us, iteration = 10M iter.
+Function cost: 7453930 us, iteration = 50M iter.
+Function cost: 9491777 us, iteration = 100M iter.
+Function cost: 8020615 us, iteration = 100M iter.
+Function cost: 7800491 us, iteration = 100M iter.
+Function cost: 7319035 us, iteration = 100M iter.
+```
+
+Yes we know making an array now adds some complexity. So let's get rid of array usage.
+
+```c++
+    for (long long i = 0; i < total_times; ++i) {
+        vector ae = er * cx.cwiseAbs();
+        vector cpaa = cp.cwiseAbs();
+        a[i] = (ae - cpaa).minCoeff() < -ea;
+        a[i] += (ae / 10.0 - cpaa).minCoeff() > -ea / 10.0;
+    }
+```
+
+```shell
+[xli@loginNode src]$ ./test.x 1000 1 && ./test.x 100 10 && ./test.x 20 50 && ./test.x 10 100 && ./test.x 3 100 && ./test.x 2 100 && ./test.x 1 100
+Function cost: 3004597 us, iteration = 1M iter.
+Function cost: 3818859 us, iteration = 10M iter.
+Function cost: 7437306 us, iteration = 50M iter.
+Function cost: 9181091 us, iteration = 100M iter.
+Function cost: 8025171 us, iteration = 100M iter.
+Function cost: 7808527 us, iteration = 100M iter.
+Function cost: 7326142 us, iteration = 100M iter.
+```
+
+So the key is not that related to array. It should be the problem of extra allocation...
+Let's just give back the control to Eigen...
+
+
+```c++
+    for (long long i = 0; i < total_times; ++i) {
+        a[i] = (er * cx.cwiseAbs() - cp.cwiseAbs()).minCoeff() < -ea;
+        a[i] += (er / 10.0 * cx.cwiseAbs() - cp.cwiseAbs()).minCoeff() > -ea / 10.0;
+    }
+```
+
+
+```shell
+[xli@loginNode src]$ ./test.x 1000 1 && ./test.x 100 10 && ./test.x 20 50 && ./test.x 10 100 && ./test.x 3 100 && ./test.x 2 100 && ./test.x 1 100
+Function cost: 1079274 us, iteration = 1M iter.
+Function cost: 1139406 us, iteration = 10M iter.
+Function cost: 1253810 us, iteration = 50M iter.
+Function cost: 1360776 us, iteration = 100M iter.
+Function cost: 745248 us, iteration = 100M iter.
+Function cost: 440633 us, iteration = 100M iter.
+Function cost: 352101 us, iteration = 100M iter.
+```
+
+Great! Reducing needless allocation operations and let Eigen decide whether it is actually needed...
+
+At the end of this post, I'd like to recommend this Eigen's post [development corner](http://eigen.tuxfamily.org/index.php?title=Developer%27s_Corner#Resources) to whomever reading here.
+
