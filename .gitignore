@@ -5,3 +5,5 @@ vendor
 .vscode
 
 Gemfile.lock
+
+tmp
