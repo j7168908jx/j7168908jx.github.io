@@ -2,10 +2,20 @@
 layout: default
 title: Xiang Li
 subtitle: Homepage
-description: j7168908jx@gmail.com
+description:
+    'Ph.D. Student at School of Mathematical Sciences, Fudan University
+    <br/><br/>
+    Advisor:
+    <a href="https://homepage.fudan.edu.cn/wggao/" target="_blank" style="color: inherit">Weiguo Gao</a>,
+    <a href="https://yingzhouli.com/" target="_blank" style="color: inherit">Yingzhou Li</a>
+    <br/><br/>
+    <a href="mailto:j7168908jx@gmail.com" target="_blank" style="color: inherit">j7168908jx@gmail.com</a>
+    '
 ---
 
-This is the start of my homepage!
+### Research Interest
 
-Go to [posts](/posts.html) and find posts there.
 
+### Job Interest
+
+---
