@@ -1,40 +1,52 @@
 <!DOCTYPE html>
 <html lang="{{ site.lang | default: "en-US" }}">
-  <head>
-    <meta charset="UTF-8">
 
-    <title>{{ page.title | default: site.title | default: site.github.repository_name }} | {{ page.subtitle | default: site.subtitle | default: site.github.project_tagline }}</title>
+<head>
+  <meta charset="UTF-8">
 
-    <!-- The SEO tag works for Search Engine https://github.com/jekyll/jekyll-seo-tag -->
-    {% seo %}
+  <title>{{ page.title | default: site.title | default: site.github.repository_name }} | {{ page.subtitle | default:
+    site.subtitle | default: site.github.project_tagline }}</title>
 
-    <!-- also include custom math macros -->
-    <script type="text/javascript" async
-      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML,/assets/js/custom-math.js">
+  <!-- The SEO tag works for Search Engine https://github.com/jekyll/jekyll-seo-tag -->
+  {% seo %}
+
+  <!-- also include custom math macros -->
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML,/assets/js/custom-math.js">
     </script>
 
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#157878">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style"
+    type="text/css" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#157878">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
 
-    {% include head-custom.html %}
+  {% include head-custom.html %}
 
-  </head>
+</head>
 
 
-  <body>
-    {% include header.html %}
+<body>
 
-    {% include sidebar.html %}
+  {% include header.html %}
 
-    <main id="content" class="main-content" role="main">
+  <main class="main-frame">
+    <div class="sidebar sidebar-primary" role="navigation">
+      {% include sidebar-primary.html %}
+    </div>
+    <div style="display: none" class="sidebar sidebar-secondary" role="navigation">
+      {% include sidebar-secondary.html %}
+    </div>
+    <div id="content" class="main-content" role="main">
       {{ content }}
-    </main>
+    </div>
+  </main>
 
-    {% include footer.html %}
 
-  </body>
+  {% include footer.html %}
+
+</body>
+
 </html>

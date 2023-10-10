@@ -4,60 +4,87 @@
 
 @import 'jekyll-theme-cayman';
 
+.main-frame {
+    max-width: 120rem;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+
+    @include small {
+        flex-direction: column;
+    }
+}
+
 .main-content {
     line-height: 2;
-    max-width: 80rem;
-    margin-right: 2rem;
-
+    max-width: 70rem;
     @include large {
         font-size: 1.25rem;
-        margin-left: 10rem;
-        padding: 2rem 6rem;
+        padding: 1rem 0.5rem;
+        min-width: calc(32rem + max(calc(min(45vw, 60rem) - 36rem), 0rem));
+        margin: 1rem auto 1rem 1rem;
     }
 
     @include medium {
         font-size: 1.1rem;
-        margin-left: 6rem;
-        padding: 2rem 2rem;
-    }
+        padding: 1rem 0.5rem;
+        margin: 1rem auto 1rem 0.5rem;
+        min-width: calc(20rem + max(calc(min(45vw, 60rem) - 22rem), 0rem));
+}
 
     @include small {
         font-size: 0.9rem;
-        margin-left: 2rem;
         padding: 2rem 1rem;
+        margin: 2rem 0.5rem;
+    }
+    .listing li {
+        span {
+            float: right;
+        }
+        .post-excerpt {
+            padding-top: 0.5rem;
+            padding-bottom: 1rem;
+            font-size: 0.95rem;
+            max-width: 40rem;
+        }
     }
 }
 
-.main-content .listing li span {
-    float: right;
+.main-content summary {
+    display: list-item;
+    ::marker {
+        color: rgb(202, 60, 60);
+        content: '✝ ';
+        font-size: 1.2em;
+    }
+    p {
+        display: inline-block;
+    }
 }
 
-.main-content .listing li .post-excerpt {
-    padding-top: 0.5rem;
-    padding-bottom: 1rem;
-    font-size: 0.95rem;
-    max-width: 40rem;
-}
-
-.footer {
-    @include large {
-        padding: 3em 2em;
-        margin-left: 10rem;
-    }
-    @include medium {
-        padding: 1.5em 1em;
-        margin-left: 5rem;
-    }
+.sidebar-nav ul {
+    padding-left: 0rem;
     @include small {
-        padding: 1em 0.5em;
-        margin-left: 1rem;
+        margin: 2rem 2rem;
     }
-
+    :after {
+        @include small {
+            content: "";
+            background: rgb(193, 215, 213);
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            margin: auto;
+            width: 50%;
+            height: 1px;
+        }
+    }
 }
 
-.sidebar {
+.sidebar-primary {
     overflow: hidden;
     background-color: rgb(255, 255, 255);
+    flex-shrink: 0;
 
     @include large {
         width: 12rem;
@@ -89,36 +116,72 @@
     }
 }
 
-.sidebar ul {
-    padding: 0.5rem;
-    @include small {
-        margin: 2rem 2rem;
-    }
-}
-
-.sidebar ul:after {
-    @include small {
-        content: "";
-        background: rgb(193, 215, 213);
-        position: absolute;
-        bottom: 0;
-        left: 25%;
-        margin: auto;
-        width: 50%;
-        height: 1px;
-    }
-}
-
-.sidebar li {
+.sidebar-primary li {
     display: block;
 
     @include large {
-        padding: 0.5rem 0;
-        font-size: 1.1rem;
+        padding: 0.5rem 0.25rem;
+        font-size: 1.25rem;
     }
 
     @include medium {
-        padding: 0.25rem 0;
+        padding: 0.5rem 0.25rem;
+        font-size: 1.1rem;
+    }
+
+    @include small {
+        padding: 0.5rem 0.25rem;
+        font-size: 1.1rem;
+    }
+}
+
+.sidebar-secondary {
+    // place fixed on the right hand side
+    position: fixed;
+    right: 0;
+    order: 2;
+    @include large {
+        min-width: calc(16rem + min(calc(calc(6.25vw - 4rem)*4), 8rem));
+        margin-left: 0rem;
+        position: sticky;
+        float: right;
+        top: 5%;
+        height: 40%;
+    }
+    @include medium {
+        min-width: 16rem;
+        margin-left: 0rem;
+        position: sticky;
+        float: right;
+        top: 5%;
+        height: 40%;
+    }
+    @include small {
+        display: none;
+        margin-left: 0rem;
+        position: sticky;
+        float: right;
+        top: 5%;
+        height: 40%;
+    }
+}
+
+.sidebar-secondary li {
+    display: block;
+
+    @include large {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: calc(1rem + min(calc(calc(6.25vw - 4rem)*1), 1rem));
+        padding-right: 0.5rem;
+        font-size: calc(0.9rem + min(calc(calc(6.25vw - 4rem)*0.2), 0.2rem));
+    }
+
+    @include medium {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 0.5rem;
         font-size: 0.9rem;
     }
 
@@ -128,39 +191,60 @@
     }
 }
 
-.sidebar .elegant-tree {
-    overflow: hidden;
-    display: block;
-    margin: auto;
 
-    @include large {
-        width: 8rem;
-        height: 8rem;
+// tree illustration
+.sidebar-primary {
+    .elegant-tree {
+        overflow: hidden;
+        display: block;
+        margin: auto;
+
+        @include large {
+            width: 8rem;
+            height: 8rem;
+        }
+
+        @include medium {
+            width: 5rem;
+            height: 5rem;
+        }
+
+        @include small {
+            width: 5rem;
+            height: 5rem;
+
+        }
     }
 
-    @include medium {
-        width: 5rem;
-        height: 5rem;
-    }
-
-    @include small {
-        width: 5rem;
-        height: 5rem;
-
+    #elegant-tree-img {
+        @include large {
+            width: 16rem;
+            height: 16rem;
+        }
+        @include medium{
+            width: 10rem;
+            height: 10rem;
+        }
+        @include small{
+            width: 10rem;
+            height: 10rem;
+        }
     }
 }
 
-.sidebar #elegant-tree-img {
+
+.footer {
     @include large {
-        width: 16rem;
-        height: 16rem;
+        padding: 3em 2em;
+        margin-left: 10rem;
     }
-    @include medium{
-        width: 10rem;
-        height: 10rem;
+    @include medium {
+        padding: 1.5em 1em;
+        margin-left: 5rem;
     }
-    @include small{
-        width: 10rem;
-        height: 10rem;
+    @include small {
+        padding: 1em 0.5em;
+        margin-left: 1rem;
     }
+
 }
