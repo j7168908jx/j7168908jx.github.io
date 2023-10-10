@@ -1,5 +1,5 @@
 ---
-title:  "Very Advanced Python Cheatsheet"
+title:  "Very Advanced Python Cheatsheet (WIP)"
 excerpt: "This post(note) summarized some FAQs asked by myself during my working experiences."
 # subtitle: " "
 tag: "Python"

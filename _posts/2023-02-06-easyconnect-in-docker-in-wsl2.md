@@ -2,7 +2,7 @@
 title:  "Setup EasyConnect in Docker in WSL"
 excerpt: "Limit EasyConnect inside the Container."
 # subtitle: " "
-tag: "misc"
+tag: "Misc"
 layout: post
 ---
 
