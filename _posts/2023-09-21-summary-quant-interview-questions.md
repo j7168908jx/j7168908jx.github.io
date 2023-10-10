@@ -1,6 +1,6 @@
 ---
-title:  "Question List Reference from Practical Guide to Quantitative Finance Interview"
-excerpt: "Simply a copy of it"
+title:  "Question (and Answer) List from Quantitative Finance Interview"
+excerpt: "More than a copy of it"
 # subtitle: " "
 tag: "Misc"
 layout: post-with-toc
@@ -244,9 +244,16 @@ Others:
 
 - 有一个拍卖，有两枚均匀 1-6 子，抛完后两枚子朝上数字之和为 contract 的价值。你和另一个人轮流 bid，先手顺序随机。只能 bid 整数。你可以看到第一个骰子的数字，你对手可以看到第二个骰子的数字。问最优策略和先手的期望收益“
 
-- $A$ 是 n 阶 01 矩阵，$A^2=0$，求矩阵中1的个数的最大值
-- A 是 n 阶矩阵，每个元素为-1 或1(等概率)，求 Var(det(A))
+> $A$ 是 n 阶 01 矩阵，$A^2=0$，求矩阵中1的个数的最大值
+  - Convert this problem to the connectivity of directed graphs. The condition requires any path found on the graph cannot have length greater than $1$. These means the graph is separated into two parts. The maximum number must be $\mathrm{floor}(n/2) * (n-\mathrm{floor}(n/2))$
+
+> A 是 n 阶矩阵，每个元素为 -1 或1(等概率)，求 Var(det(A))
+  - Consider these $n!$ permutations of all the terms to compute the determinant. Each term is considered as an variable and thus has variance $1$ (half prob. for $+1$ and half prob. for $-1$). The cross term, i.e., the covariance of two terms, must be 0 since there will be at least one index different, and this makes these two r.v. uncorrelated (See the classical problem: Is a game guessing even/odd heads fair if only the last coin is fair?). Thus, the variance of the determinant is $n!$.
+
 > A 是 n 阶 01 矩阵，每一行的1都连续出现，求证 det(A) in -1, 0, 1
-  - We may only consider the case $\mathrm{det}(A) = \pm1$, which means $A$ has full rank. In this case, we can assert that each row must have at least one $1$. Now, think of the start index of $1$ in each row. Either the start index of $1$ in all rows differ, or there will be two rows with the same start index. In the first case, we can swap the rows to make the matrix upper triangular, and the determinant up to row permutation is 1, which means $\pm1$ before any permutation. In the second case, we can substract the row of less $1$-s buy the one having more (they cannot have equal many $1$-s or the matrix is not full rank). Do this until all rows start with different index. Then we can swap the rows to make the matrix upper triangular, and the determinant up to row permutation is 1, which means $\pm1$ before any permutation.
-- 有多少 n 阶 01 矩阵满足每行的和和每列的和都是奇数
+  - We may only consider the case $\mathrm{det}(A) = \pm1$, which means $A$ has full rank. In this case, we can assert that each row must have at least one $1$. Now, think of the start index of $1$ in each row. Either the start index of $1$ in all rows differ, or there will be two rows with the same start index. In the first case, we can swap the rows to make the matrix upper triangular, and the determinant up to row permutation is 1, which means $\pm1$ before any permutation. In the second case, we can substract the row of less $1$-s buy the one having more (they cannot have equal many $1$-s or the matrix is not full rank). Do this until all rows start with different index. We can be sure that this will not last forever since each time the total number of $1$ is reduced. Then we can swap the rows to make the matrix upper triangular, and the determinant up to row permutation is 1, which means $\pm1$ before any permutation.
+
+> 有多少 n 阶 01 矩阵满足每行的和和每列的和都是奇数
+  - We can always consider the left upper $n-1$ size square matrix. For any combinations of $0$ and $1$ in this submatrix, the last row and last column (both except the last element) will be determined by the parity of the submatrix. Then, an important argument is that the last row and the last column's parity must be the same. Thus, the last element is determined. The total number of such matrices is $2^{(n-1)^2}$.
+  
 - 能否找到 n 阶矩阵，每个矩阵元为 -1,0,1, 使得所有的行和和列和都互不相同
