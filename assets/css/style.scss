@@ -4,6 +4,21 @@
 
 @import 'jekyll-theme-cayman';
 
+
+.triangle-marker::marker {
+    content: '▶ ';
+}
+
+.triangle-marker-open::marker {
+    content: '▼ ';
+    transform: rotate(0deg);
+    transition: transform 0.3s ease;
+}
+
+summary::marker {
+    content: "\200B";
+}
+
 .main-frame {
     max-width: 120rem;
     display: flex;
@@ -18,6 +33,7 @@
 .main-content {
     line-height: 2;
     max-width: 70rem;
+
     @include large {
         font-size: 1.25rem;
         padding: 1rem 0.5rem;
@@ -30,17 +46,19 @@
         padding: 1rem 0.5rem;
         margin: 1rem auto 1rem 0.5rem;
         min-width: calc(20rem + max(calc(min(45vw, 60rem) - 22rem), 0rem));
-}
+    }
 
     @include small {
         font-size: 0.9rem;
         padding: 2rem 1rem;
         margin: 2rem 0.5rem;
     }
+
     .listing li {
         span {
             float: right;
         }
+
         .post-excerpt {
             padding-top: 0.5rem;
             padding-bottom: 1rem;
@@ -52,21 +70,25 @@
 
 .main-content summary {
     display: list-item;
-    ::marker {
-        color: rgb(202, 60, 60);
-        content: '✝ ';
-        font-size: 1.2em;
-    }
+
     p {
-        display: inline-block;
+        display: inline;
     }
+}
+
+.sidebar-nav {
+    max-height: 95vh;
+    overflow-y: auto;
+
 }
 
 .sidebar-nav ul {
     padding-left: 0rem;
+
     @include small {
         margin: 2rem 2rem;
     }
+
     :after {
         @include small {
             content: "";
@@ -140,28 +162,31 @@
     position: fixed;
     right: 0;
     order: 2;
+
     @include large {
         min-width: calc(16rem + min(calc(calc(6.25vw - 4rem)*4), 8rem));
         margin-left: 0rem;
         position: sticky;
         float: right;
-        top: 5%;
+        top: 2.5%;
         height: 40%;
     }
+
     @include medium {
         min-width: 16rem;
         margin-left: 0rem;
         position: sticky;
         float: right;
-        top: 5%;
+        top: 2.5%;
         height: 40%;
     }
+
     @include small {
         display: none;
         margin-left: 0rem;
         position: sticky;
         float: right;
-        top: 5%;
+        top: 2.5%;
         height: 40%;
     }
 }
@@ -221,11 +246,13 @@
             width: 16rem;
             height: 16rem;
         }
-        @include medium{
+
+        @include medium {
             width: 10rem;
             height: 10rem;
         }
-        @include small{
+
+        @include small {
             width: 10rem;
             height: 10rem;
         }
@@ -238,10 +265,12 @@
         padding: 3em 2em;
         margin-left: 10rem;
     }
+
     @include medium {
         padding: 1.5em 1em;
         margin-left: 5rem;
     }
+
     @include small {
         padding: 1em 0.5em;
         margin-left: 1rem;

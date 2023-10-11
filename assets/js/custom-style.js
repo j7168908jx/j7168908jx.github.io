@@ -1,3 +1,15 @@
+
+var overlayScrollInit = function () {
+    OverlayScrollbarsGlobal.OverlayScrollbars(document.querySelector('#sidebar-secondary-nav'), {
+        scrollbars: {
+            autoHide: "move",
+            autoHideDelay: 300,
+            // autoHideSuspend: true,
+        }
+    });
+}
+
+
 // Secondary sidebar color change on scroll
 var onScroll = function () {
     var scrollPosition = window.scrollY + window.innerHeight / 3.0;
@@ -43,42 +55,40 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-var convertBlockquotesToDetails = function () {
+var convertliDetailsMarker = function () {
     // Get all blockquote elements in the document
-    var blockquotes = document.getElementsByTagName('blockquote');
-
-    // Convert the HTMLCollection to an array to avoid live collection issues
-    var blockquotesArray = Array.prototype.slice.call(blockquotes);
-
-    blockquotesArray.forEach(function (blockquote) {
-        // Check if the first child is a p and if there is at least one ul
-        var firstChildIsP = blockquote.firstElementChild.tagName === 'P';
-        var hasUL = blockquote.getElementsByTagName('ul').length > 0;
-
-        if (firstChildIsP && hasUL) {
-            // Create a details and summary element
-            var details = document.createElement('details');
-            var summary = document.createElement('summary');
-
-            // Move the original p into the summary
-            summary.appendChild(blockquote.firstElementChild);
-
-            // Move remaining nodes into details
-            while (blockquote.firstElementChild) {
-                details.appendChild(blockquote.firstElementChild);
-            }
-
-            // Insert summary into details
-            details.insertBefore(summary, details.firstChild);
-
-            // Replace the blockquote with the details
-            blockquote.parentNode.replaceChild(details, blockquote);
+    var main_content = document.getElementById('content');
+    
+    main_content.querySelectorAll('li > details:only-child').forEach(function(details) {
+        if (details.parentElement.tagName !== 'LI' ||
+            details.parentElement.children.length !== 1) {
+            return;
         }
+
+        details.parentElement.classList.add('triangle-marker');
+        details.addEventListener('toggle', function() {
+            if (details.open) {
+                details.parentElement.classList.add('triangle-marker-open');
+                details.parentElement.classList.remove('triangle-marker');
+            } else {
+                details.parentElement.classList.add('triangle-marker');
+                details.parentElement.classList.remove('triangle-marker-open');
+            }
+        });
+        // Add event listener for click on li
+        details.parentElement.addEventListener('click', function(event) {
+            // Prevent event from triggering twice when details is clicked directly
+            if (event.target !== details) {
+                details.click();
+            }
+        });
     });
+
 };
+
 
 
 onScroll();
 window.addEventListener('scroll', onScroll);
-
-convertBlockquotesToDetails();
+window.addEventListener("DOMContentLoaded", overlayScrollInit);
+window.addEventListener("DOMContentLoaded", convertliDetailsMarker);
