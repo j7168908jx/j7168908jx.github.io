@@ -14,10 +14,20 @@ description:
 extra_js: assets/js/index.js
 ---
 
+### Hi there 👋
+
+I'm current a graduate (Ph.D) student at Fudan University.
+
 ### Research Interest
 
+- Distributed-memory algorithm and software;
+- Hierarchical matrix and its applications;
+- Quantum computing;
+- Heteregeneous computing algorithms (GPU computing).
 
 ### Job Interest
+
+I'm looking for a job as a quantitative researcher after I graduate.
 
 ### Coding Activity Records
 
