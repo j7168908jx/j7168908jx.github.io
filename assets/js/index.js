@@ -8,7 +8,9 @@ var drawGraph = function (data1) {
         color: "#ccc",
     };
     data.push(rest);
-
+    var totalTime = data[0].total_seconds / data[0].percent * 100.0;
+    var totalHoursString = Math.floor(totalTime / 3600).toString() + " hrs";
+    var totalMinutesString = Math.floor((totalTime % 3600) / 60).toString() + " mins";
     const ctx = document.getElementById('coding-language-month-chart');
     chart = new Chart(ctx, {
         type: "doughnut",
@@ -23,10 +25,10 @@ var drawGraph = function (data1) {
             plugins: {
                 title: {
                     display: true,
-                    text: "Languages over Last 30 Days (Powered by wakatime.com)",
+                    text: ["Total " + totalHoursString + " " + totalMinutesString + " in the last 30 days"],
                     fullSize: true,
                     font: {
-                        size: 16
+                        size: 18
                     }
                 },
                 legend: {
@@ -39,7 +41,7 @@ var drawGraph = function (data1) {
 
 var monthRecordData;
 var includeCodingLanguageMonthRecord = function () {
-    fetch('https://wakatime.com/share/@j7168908jx/1622d795-cb96-4dd2-91b3-c7ffd4464ea8.json')
+    fetch('https://wakatime.com/share/@j7168908jx/761ac407-b95e-4be2-b6a9-9ca4c8123d09.json')
         .then(response => response.json())
         .then(data => {monthRecordData = data; drawGraph(data);})
         .catch(error => console.error('Error:', error));
