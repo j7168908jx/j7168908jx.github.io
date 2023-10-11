@@ -11,11 +11,22 @@ description:
     <br/><br/>
     <a href="mailto:j7168908jx@gmail.com" target="_blank" style="color: inherit">j7168908jx@gmail.com</a>
     '
+extra_js: assets/js/index.js
 ---
 
 ### Research Interest
 
 
 ### Job Interest
+
+### Coding Activity Records
+
+<figure>
+<embed src="https://wakatime.com/share/@j7168908jx/e7a353f3-b45f-4ca0-933c-057e80146f79.svg" />
+</figure>
+
+<div id="coding-language-month" style="max-width: 28rem; max-height: 28rem">
+<canvas id="coding-language-month-chart" role="img"><p>Your browser does not support the canvas element.</p></canvas>
+</div>
 
 ---

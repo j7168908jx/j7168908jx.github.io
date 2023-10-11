@@ -25,6 +25,10 @@
 
   {% include head-custom.html %}
 
+  {% if page.extra_js %}
+  <script src="{{ page.extra_js | relative_url }}"></script>
+  {% endif %}
+
 </head>
 
 
