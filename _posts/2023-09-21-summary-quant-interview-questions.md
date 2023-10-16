@@ -360,3 +360,29 @@ Others:
 - 有 N 个点均匀随机分布在半径为 1 的单位球中,设它们距离球心的距离为 $d_1, d_2, \dots d_N$. 设 $D = \min(d_1,d_2,\dots,d_N)$，求 $D$ 的中位数。
 
 - If n is a random positive integer, what is the probability that $2^n$ starts with the digit 1?
+
+
+
+## From StackOverflow (StackExchange)
+
+### Biased Coin Flipping Game
+
+- <details><summary>[Originated from here](https://math.stackexchange.com/questions/4634542/probability-of-winning-coin-game).
+  You will play a coin game against an opponent. A biased coin will be continually flipped where there is a $2/3$ chance of Heads and a $1/3$ chance of Tails.
+  If Heads is flipped then you receive $1$ from your opponent. If Tails is flipped then you pay $1$ to your opponent.
+  You start with $10$ and your opponent starts with $20$. You keep playing until one of you is bankrupt (= has $0$ left).
+  What is the probability, that your opponent bankrupts?
+  </summary>
+  See [Wikipedia](https://en.wikipedia.org/wiki/Gambler%27s_ruin#Unfair_coin_flipping). The chance is more than $99.9\%$.
+
+  And here we summarize the asymmetric simple random walk (See Durrett, R., Probability: Theory and Examples, p.260).
+
+  Staring from $S_0=0$, with probability $p \gt 1/2$ we add $1$ and with probability $q\triangleq 1-p$ we substract $-1$. Denote the cumulated sum of the random walk as $S_n$, and first visit time $T_z = \inf(n: S_n=z)$. Assume boundary $a, b \gt 0$.
+  - Martingale is $\varphi(S_n) = (q/p)^{S_n}$.
+  - Two-sided boundary $[-a, b]$,
+    $$\mathbb P(T_{-a} \lt T_{b}) = (\varphi(b)-\varphi(0)) / (\varphi(b)-\varphi(-a)),$$
+    $$\mathbb P(T_{b} \lt T_{-a}) = (\varphi(0)-\varphi(-a)) / (\varphi(b)-\varphi(-a)).$$
+  - Single-sided boundary $[-a, +\infty)$,
+    $$\mathbb P(T_{-a} \lt +\infty) = (q/p)^{a}.$$
+  - Single-sided boundary $(-\infty, b]$, probability of hitting $b$ is $1$ and expected hitting time is $\mathbb E T_b = b/(2p-1)$.
+  </details>
