@@ -228,7 +228,11 @@ Others:
 4. Ticket line
   - price 5 and $2n$ people having 5 and 10 bills
 5. Coin sequence
-  - $n$ heads in a row
+  - $n$ heads in a row (typist monkey problem)
+  - <details><summary>
+    We generalize this problem to have a $1/6$ chance of getting head (or a six from a dice), and $5/6$ of getting tail (or except a six from a dice), and we want to obtain a given sequence, say $HHTTHHHTT$, what is the expected number of tosses needed?
+    </summary>
+    </details>
 
 
 ## From Redbook
@@ -361,7 +365,9 @@ Others:
 
 - If n is a random positive integer, what is the probability that $2^n$ starts with the digit 1?
 
+### from AMC10
 
+- Jason rolls three fair standard six-sided dice.Then he looks at the rolls and chooses a subsetof the dice (possibly empty, possibly all threedice) to reroll. After rerolling, he wins if and only ifthe sum of the numbers face up on the three diceis exactly 7. Jason always plays to optimize hischances of winning. What is the probability thathe chooses to reroll exactly two of the dice?
 
 ## From StackOverflow (StackExchange)
 
@@ -373,6 +379,9 @@ Others:
   You start with $10$ and your opponent starts with $20$. You keep playing until one of you is bankrupt (= has $0$ left).
   What is the probability, that your opponent bankrupts?
   </summary>
+  One way we may comupte by the Markov chains. Denote $a_x$ the probability of winning the game starting with $x$ dollars ($x=10$ here). We have $3a_{x} = 2a_{x+1} + a_{x-1}$, with boundary condition $a_{30}=1, a_0 = 0$. This soon gives us $b_k = a_k - a_{k-1}$ is a geometric series. The probability of wining is $a_{10} = \sum_{k=1}^{10}b_k$ and we may use the fact $\sum_{k=1}^{30}b_k = 1$ and the sum for first $10$, middle $10$, and last $10$ being $1:2^{-10}:2^{-20}$.
+
+  Another solution using martingale can be used as well,
   See [Wikipedia](https://en.wikipedia.org/wiki/Gambler%27s_ruin#Unfair_coin_flipping). The chance is more than $99.9\%$.
 
   And here we summarize the asymmetric simple random walk (See Durrett, R., Probability: Theory and Examples, p.260).
@@ -386,3 +395,9 @@ Others:
     $$\mathbb P(T_{-a} \lt +\infty) = (q/p)^{a}.$$
   - Single-sided boundary $(-\infty, b]$, probability of hitting $b$ is $1$ and expected hitting time is $\mathbb E T_b = b/(2p-1)$.
   </details>
+
+
+### Linear Algebra
+
+- What are the conditions for an integer matrices to have an inverse such that
+  elements in this inverse are all integers?
