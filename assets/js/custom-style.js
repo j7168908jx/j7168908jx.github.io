@@ -58,7 +58,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 var convertliDetailsMarker = function () {
     // Get all blockquote elements in the document
     var main_content = document.getElementById('content');
-    
+
     main_content.querySelectorAll('li > details:only-child').forEach(function(details) {
         if (details.parentElement.tagName !== 'LI' ||
             details.parentElement.children.length !== 1) {
@@ -87,8 +87,26 @@ var convertliDetailsMarker = function () {
 };
 
 
+var preventSelectPrompt = function() {
+    document.querySelectorAll('div.language-python span.o').forEach((el) => {
+        if (el.innerHTML.trim() === '>>>' || el.innerHTML.trim() === '&gt;&gt;&gt;') {
+            el.style.userSelect = 'none';
+            let nextSibling = el.nextSibling;
+            if (nextSibling && nextSibling.nodeType === Node.TEXT_NODE
+                 && nextSibling.textContent.length > 0 && nextSibling.textContent[0] === ' ') {
+                let wrapper = document.createElement('span');
+                wrapper.style.userSelect = 'none';
+                wrapper.textContent = ' ';
+                nextSibling.textContent = nextSibling.textContent.substring(1);
+                nextSibling.parentNode.insertBefore(wrapper, nextSibling);
+                // nextSibling.parentNode.replaceChild(wrapper, nextSibling);
+            }
+        }
+    });
+}
 
 onScroll();
 window.addEventListener('scroll', onScroll);
 window.addEventListener("DOMContentLoaded", overlayScrollInit);
 window.addEventListener("DOMContentLoaded", convertliDetailsMarker);
+window.addEventListener("DOMContentLoaded", preventSelectPrompt);

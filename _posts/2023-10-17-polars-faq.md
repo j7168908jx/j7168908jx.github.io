@@ -20,7 +20,10 @@ Not to confuse this one with `groupby_dynamic`, which is deprecated.
 An example of using it:
 
 ```python
->>> pl.DataFrame({"a": [1,4,8,12,16,23,29]}).set_sorted("a").group_by_dynamic("a", every="7i", start_by="datapoint", include_boundaries=True, closed="right", label="right").agg([pl.count(), pl.col("a").alias("ab")])
+>>> pl.DataFrame({"a": [1,4,8,12,16,23,29]}) \
+>>>   .set_sorted("a")  \
+>>>   .group_by_dynamic("a", every="7i", start_by="datapoint", include_boundaries=True, closed="right", label="right") \
+>>>   .agg([pl.count(), pl.col("a").alias("ab")])
 shape: (4, 5)
 ┌─────────────────┬─────────────────┬─────┬───────┬───────────┐
 │ _lower_boundary ┆ _upper_boundary ┆ a   ┆ count ┆ ab        │
