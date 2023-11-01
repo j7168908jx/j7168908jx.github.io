@@ -367,7 +367,7 @@ Others:
 
 ### from AMC10
 
-- Jason rolls three fair standard six-sided dice.Then he looks at the rolls and chooses a subsetof the dice (possibly empty, possibly all threedice) to reroll. After rerolling, he wins if and only ifthe sum of the numbers face up on the three diceis exactly 7. Jason always plays to optimize hischances of winning. What is the probability thathe chooses to reroll exactly two of the dice?
+- Jason rolls three fair standard six-sided dice.Then he looks at the rolls and chooses a subsetof the dice (possibly empty, possibly all three dice) to reroll. After rerolling, he wins if and only if the sum of the numbers face up on the three diceis exactly 7. Jason always plays to optimize his chances of winning. What is the probability that he chooses to reroll exactly two of the dice?
 
 ## From StackOverflow (StackExchange)
 
@@ -399,5 +399,63 @@ Others:
 
 ### Linear Algebra
 
-- What are the conditions for an integer matrices to have an inverse such that
-  elements in this inverse are all integers?
+- <details><summary>What are the conditions for an integer matrices to have an inverse such that elements in this inverse are all integers?
+  </summary>
+  Sufficient and necessary condintion would be the determinant being $\pm1$. Easily for necessary, $\mathrm{det}(A^{-1}) = 1/\mathrm{det}(A)$.
+  For sufficiency, note that by the adjugate matrix, we have $A^{-1} = \mathrm{det}(A)^{-1} \mathrm{adj}(A)$.
+  </details>
+
+### Game Theory
+
+- [Source.](https://math.stackexchange.com/questions/4558093/2-players-pick-number-from-1-100-10-is-subtracted-from-higher-number-whats-th)
+  2 players pick a number from 1 to 100. From the player with the higher number, we subtract 10 and whoever has the higher number then, wins. What is the optimal strategy?
+
+- [Source.](https://math.stackexchange.com/questions/2393250/finding-the-best-optimal-strategy-for-this-game?rq=1)
+  You are player 1 and you are versing another person player 2. You and player 2 choose any integer from 1 to 30. A 30 sided die is rolled and whoever's number is the closest to the die's number is the "winner" of the game and gains points according to what they guessed.e.g. Player 1 picks number 20 and player 2 picks number 15.The die lands on the number 18 so player 1 wins and gets 20 points.
+
+  (Note that you can choose whether or not to go first or second in picking a number (you will know the other player's number if you go second)).
+
+  What is the optimal strategy for this game?
+
+- [Source.](https://math.stackexchange.com/questions/1525074/what-are-the-optimal-mixed-strategies-for-this-game?rq=1)
+  Fix $k\lt n$ positive integers, and two players play the following game: each player picks a positive integer between 1 and n. If the two numbers picked are within k of each other, the larger number wins and that player gains one point while the other player loses one point. Else, the smaller number wins and that player gains one point while the other loses one. Picking the same number results in a tie, and no points gained or lost. I've tried to find patterns for optimal mixed strategies based on arbitrary k and n, without success. Here I define an "optimal strategy" as one that has ≥0 expected value against any mixed strategy.As an example, when k=1 and n=3 this game specializes to rock-paper-scissors, with a unique optimal strategy of (1/3, 1/3, 1/3).
+
+- [Source.](https://math.stackexchange.com/questions/4384425/optimal-strategy-in-a-coin-game-has-unexpected-symmetry?rq=1)
+  I am going to toss a fair coin and you are trying to determine if I tossed a Head or Tail. You do this using the rule I follow when I toss my coin:I have before me 2 red boxes each with a red marble inside them, I also have 2 blue boxes each with a blue marble inside of them. Finally, there are two empty white boxes. If I toss a Head I must move a red marble from a red box into an empty white box.
+
+  Similarly, if I toss a Tail I must move a blue marble from a blue box into an empty white box. To aid you in your guess of my toss, once I have moved a marble, you are then permitted to open and examine the contents of a single red, blue or white box.
+
+  What is the best strategy and what is the optimal probability of guessing correctly? What if there are $R$ red and $B$ blue boxes and $W$ white boxes?
+
+## From Unknown Sources
+
+- <details><summary>Roll a 100-side dice and get paid the number it shows. You can roll again by paying 1 dollar. What is the best expected payoff?
+  </summary>
+  Assume we stop if getting top $a$ result and we denote $x$ as the expected payoff, we have
+
+  $$x = \frac{a}{100}\times\frac{200-a+1}{2} + \frac{100-a}{100}(x-1).$$
+
+  Simplify we obtain $a=10\sqrt{2}$.
+  </details>
+
+
+## From QIA
+
+### 第二季第一期
+### 第二季第二期
+
+- <details><summary>A 和 B 在 2xn 的模盘上进行如下游戏: A 先行，A 用 1x2 的横格子填，B 用 2x1 竖格子填，谁先无处可填，谁输。 试问 n 满足什么条件下，A 有必胜策略?
+  </summary>
+  $n \equiv 1 ~\mathrm{mod}~ 4$ 除外 A 有必胜策略. See [source](https://mp.weixin.qq.com/s/yXs346MEhitUmBC2l_lq3g).
+  </details>
+
+- <details><summary>对于n个互不相同的数 $a_1, \dots, a_n$。用如下算法得到其中最大值 $m=a_1$, 依次将 m 与 $a_2, \dots a_n$ 比较 若 $a_i \gt m$, 则令 $m=a_i$. 求对 $m$ 做赋值操作次数的期望次数?
+  </summary>
+  递归, 若 $a_n$ 是最大值, 则操作会比 $a_1, \dots, a_{n-1}$ 多 1, 否则不变.
+
+  $$E_n = \frac1n (E_{n-1}+1) + \frac{n-1}{n}E_{n-1} = E_{n-1} + \frac1n.$$
+
+  从而由于 $E_1 = 1$, 可得 $E_n = \sum_{i=1}^n (1/i)$.
+  </details>
+
+### 第二季第三期
