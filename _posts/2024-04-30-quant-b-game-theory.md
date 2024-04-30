@@ -21,7 +21,8 @@ layout: post-with-toc
 - <details><summary><cite>Redbook, 红薯哥.</cite>
   $K$ dollars in a black box. You write a number $x$, and Jack also writes a number $y$. Both don't know what each other writes but know $K$. If $x + y\leq K$, you win $x$ and Jack wins $y$. If $x+y \gt K$, both win $0$.
   </summary>
-    - <details><summary>One box $K=100$. If Jack is rational, what should you write.
+  
+  - <details><summary>One box $K=100$. If Jack is rational, what should you write.
     </summary>
     Write out the gain matrix. Easily we can see there is no pure Nash equilibrium and thus we turn to find a mixed strategy. Assume Jack writes $y$ with probability $p_y$, which makes us indifferent writing any of $1$ to $99$ (note that he will not write $100$ and we will not write $100$ as well).
 
