@@ -20,7 +20,10 @@ layout: post-with-toc
 
 - <details><summary>What are the conditions for an integer matrices to have an inverse such that elements in this inverse are all integers?
   </summary>
-  Sufficient and necessary condintion would be the determinant being $\pm1$. Easily for necessary, $\mathrm{det}(A^{-1}) = 1/\mathrm{det}(A)$.
+  Sufficient and necessary condintion would be the determinant being $\pm1$.
+
+  Easily for necessary, $\mathrm{det}(A^{-1}) = 1/\mathrm{det}(A)$.
+
   For sufficiency, note that by the adjugate matrix, we have $A^{-1} = \mathrm{det}(A)^{-1} \mathrm{adj}(A)$.
   </details>
 
@@ -39,7 +42,11 @@ layout: post-with-toc
 
 
 - <details><summary><cite>Redbook, 维特根斯坦.</cite>
-  Given noisy estimates of signed differences $d_{ij}$ between a set of $n$ real numbers $\{x_i\}$, find estimators $\{\hat x_i\}$ that minimize $\sum_{i,j}(d_{ij}-(\hat x_i- \hat x_j))^2$ subject to $\min(\hat x_i) = 0$. The data is given as a skew-symmetric matrix, $D_{n\times n} = (d_{ij})$, with $d_{ij}\approx x_i - x_j$. Write a program.
+  Given noisy estimates of signed differences $d_{ij}$ between a set of $n$ real numbers $\{x_i\}$,
+
+  find estimators $\{\hat x_i\}$ that minimize $\sum_{i,j}(d_{ij}-(\hat x_i- \hat x_j))^2$ subject to $\min(\hat x_i) = 0$.
+
+  The data is given as a skew-symmetric matrix, $D_{n\times n} = (d_{ij})$, with $d_{ij}\approx x_i - x_j$. Write a program.
   </summary>
   ...
   </details>
@@ -56,6 +63,10 @@ layout: post-with-toc
 - <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
   $A$ 是 n 阶 01 矩阵，$A^2=0$，求矩阵中1的个数的最大值
   </summary>
-  Convert this problem to the connectivity of directed graphs. The condition requires any path found on the graph cannot have length greater than $1$. These means the graph is separated into two parts. The maximum number must be $\mathrm{floor}(n/2) * (n-\mathrm{floor}(n/2))$
+  Convert this problem to the connectivity of directed graphs.
+
+  The condition requires any path found on the graph cannot have length greater than $1$.
+
+  These means the graph is separated into two parts. The maximum number must be $\mathrm{floor}(n/2) * (n-\mathrm{floor}(n/2))$
   </details>
 

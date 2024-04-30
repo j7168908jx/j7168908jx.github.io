@@ -32,7 +32,8 @@ layout: post-with-toc
   从而由于 $E_1 = 1$, 可得 $E_n = \sum_{i=1}^n (1/i)$.
   </details>
 
-- <details><summary>Roll a 100-side dice and get paid the number it shows. You can roll again by paying 1 dollar. What is the best expected payoff?
+- <details><summary>
+  Roll a 100-side dice and get paid the number it shows. You can roll again by paying 1 dollar. What is the best expected payoff?
   </summary>
   Assume we stop if getting top $a$ result and we denote $x$ as the expected payoff, we have
 
@@ -48,20 +49,32 @@ layout: post-with-toc
   </details>
 
 - <details><summary><cite>Redbook, 红薯哥.</cite>
-  Two boxes, A and B contain n balls each. In each step, you randomly choose a box and then draw one ball from it. Repeat this until the box you choose actually turns out to be empty. What's the expected number of remaining balls in the other box at the end of this process?
+  Two boxes, A and B contain n balls each.
+
+  In each step, you randomly choose a box and then draw one ball from it.
+
+  Repeat this until the box you choose actually turns out to be empty.
+
+  What's the expected number of remaining balls in the other box at the end of this process?
   </summary>
   ...
   </details>
 
 - <details><summary><cite>Redbook, 红薯哥.</cite>
-  The numbers $x_1, x_2, x_3, \dots$ are chosen uniformly at random from $[0, 1]$ and independently from each other as long as they follow the pattern $x_1 \gt x_2$, $x_2 \lt x_3$, $x_3\gt x_4$, $x_4 \lt x_5, \dots$. How many numbers on average can be chosen before the pattern is broken?
+  The numbers $x_1, x_2, x_3, \dots$ are chosen uniformly at random from $[0, 1]$ and independently from each other as long as they follow the pattern $x_1 \gt x_2$, $x_2 \lt x_3$, $x_3\gt x_4$, $x_4 \lt x_5, \dots$.
+
+  How many numbers on average can be chosen before the pattern is broken?
   </summary>
   ...
   </details>
 
 
 - <details><summary><cite>Redbook, 红薯哥.</cite>
-  There are N people arriving between 9 a.m. and 10 a.m.. Each waits for 15 minutes after arrival. What is the probability that they meet each other given their arrival time is uniformly distributed.
+  There are N people arriving between 9 a.m. and 10 a.m..
+
+  Each waits for 15 minutes after arrival.
+
+  What is the probability that they meet each other given their arrival time is uniformly distributed.
   </summary>
   ...
   </details>
@@ -74,7 +87,9 @@ layout: post-with-toc
   </details>
 
 - <details><summary><cite>Redbook, 红薯哥.</cite>
-  Assume $X, Y$ are i.i.d. standard normal distribution r.v., find the expectation and variance of $(X ~\text{given}~ X+Y=1)$.
+  Assume $X, Y$ are i.i.d. standard normal distribution r.v.,
+
+  find the expectation and variance of $(X ~\text{given}~ X+Y=1)$.
   </summary>
   ...
   </details>
@@ -148,7 +163,13 @@ layout: post-with-toc
 - <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
   A 是 n 阶矩阵，每个元素为 -1 或 1 (等概率)，求 Var(det(A))
   </summary>
-  Consider these $n!$ permutations of all the terms to compute the determinant. Each term is considered as an variable and thus has variance $1$ (half prob. for $+1$ and half prob. for $-1$). The cross term, i.e., the covariance of two terms, must be 0 since there will be at least one index different, and this makes these two r.v. uncorrelated (See the classical problem: Is a game guessing even/odd heads fair if only the last coin is fair?). Thus, the variance of the determinant is $n!$.
+  Consider these $n!$ permutations of all the terms to compute the determinant.
+
+  Each term is considered as an variable and thus has variance $1$ (half prob. for $+1$ and half prob. for $-1$).
+
+  The cross term, i.e., the covariance of two terms, must be 0 since there will be at least one index different, and this makes these two r.v. uncorrelated (See the classical problem: Is a game guessing even/odd heads fair if only the last coin is fair?).
+
+  Thus, the variance of the determinant is $n!$.
   </details>
 
 

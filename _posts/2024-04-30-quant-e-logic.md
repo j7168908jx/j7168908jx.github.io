@@ -28,7 +28,13 @@ layout: post-with-toc
 
 
 - <details><summary><cite>Redbook, 红薯哥.</cite>
-  Draw N (N > 3) i.i.d. points uniformly from interval $(0, 1]$. Define the neighbor of a point as the closest point to it (excluding itself). If the neighbor of its neighbor is the point itself we call this point a good point. The expectation of the number of good points is $f(N)$. What is $f(N)$ in general?
+  Draw N (N > 3) i.i.d. points uniformly from interval $(0, 1]$.
+
+  Define the neighbor of a point as the closest point to it (excluding itself).
+
+  If the neighbor of its neighbor is the point itself we call this point a good point.
+
+  The expectation of the number of good points is $f(N)$. What is $f(N)$ in general?
   </summary>
   ...
   </details>
@@ -47,7 +53,9 @@ layout: post-with-toc
   </details>
 
 - <details><summary><cite>Redbook, 红薯哥.</cite>
-  Given $\mathbb E(X), \mathbb E(\max(k, X)), \mathbb E(\min(k, X))$ for all $k$, write a formula for $\mathbb E(f(X))$ if $f\in\mathcal C^2(\mathbb R)$. (See Carr-Madan Formula)
+  Given $\mathbb E(X), \mathbb E(\max(k, X)), \mathbb E(\min(k, X))$ for all $k$,
+
+  write a formula for $\mathbb E(f(X))$ if $f\in\mathcal C^2(\mathbb R)$. (See Carr-Madan Formula)
   </summary>
   ...
   </details>
@@ -71,7 +79,13 @@ layout: post-with-toc
 - <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
   有多少 n 阶 01 矩阵满足每行的和和每列的和都是奇数
   </summary>
-  We can always consider the left upper $n-1$ size square matrix. For any combinations of $0$ and $1$ in this submatrix, the last row and last column (both except the last element) will be determined by the parity of the submatrix. Then, an important argument is that the last row and the last column's parity must be the same. Thus, the last element is determined. The total number of such matrices is $2^{(n-1)^2}$.
+  We can always consider the left upper $n-1$ size square matrix.
+
+  For any combinations of $0$ and $1$ in this submatrix, the last row and last column (both except the last element) will be determined by the parity of the submatrix.
+
+  Then, an important argument is that the last row and the last column's parity must be the same.
+
+  Thus, the last element is determined. The total number of such matrices is $2^{(n-1)^2}$.
   </details>
 
 - <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
@@ -84,7 +98,21 @@ layout: post-with-toc
 - <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
   A 是 n 阶 01 矩阵，每一行的1都连续出现，求证 det(A) in -1, 0, 1
   </summary>
-  We may only consider the case $\mathrm{det}(A) = \pm1$, which means $A$ has full rank. In this case, we can assert that each row must have at least one $1$. Now, think of the start index of $1$ in each row. Either the start index of $1$ in all rows differ, or there will be two rows with the same start index. In the first case, we can swap the rows to make the matrix upper triangular, and the determinant up to row permutation is 1, which means $\pm1$ before any permutation. In the second case, we can substract the row of less $1$-s buy the one having more (they cannot have equal many $1$-s or the matrix is not full rank). Do this until all rows start with different index. We can be sure that this will not last forever since each time the total number of $1$ is reduced. Then we can swap the rows to make the matrix upper triangular, and the determinant up to row permutation is 1, which means $\pm1$ before any permutation.
+  We may only consider the case $\mathrm{det}(A) = \pm1$, which means $A$ has full rank.
+
+  In this case, we can assert that each row must have at least one $1$.
+
+  Now, think of the start index of $1$ in each row. Either the start index of $1$ in all rows differ, or there will be two rows with the same start index.
+
+  In the first case, we can swap the rows to make the matrix upper triangular, and the determinant up to row permutation is 1, which means $\pm1$ before any permutation.
+
+  In the second case, we can substract the row of less $1$-s buy the one having more (they cannot have equal many $1$-s or the matrix is not full rank).
+
+  Do this until all rows start with different index.
+
+  We can be sure that this will not last forever since each time the total number of $1$ is reduced.
+
+  Then we can swap the rows to make the matrix upper triangular, and the determinant up to row permutation is 1, which means $\pm1$ before any permutation.
   </details>
 
 

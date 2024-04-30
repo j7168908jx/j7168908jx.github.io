@@ -21,10 +21,15 @@ layout: post-with-toc
 ### Uncatgorized
 
 
-- <details><summary><cite><a href="https://math.stackexchange.com/questions/4634542/probability-of-winning-coin-game">StackExchange</a></cite>
-  You will play a coin game against an opponent. A biased coin will be continually flipped where there is a $2/3$ chance of Heads and a $1/3$ chance of Tails.
+- <details><summary><cite><a href="https://math.stackexchange.com/questions/4634542/probability-of-winning-coin-game">StackExchange</a>.</cite>
+  You will play a coin game against an opponent.
+
+  A biased coin will be continually flipped where there is a $2/3$ chance of Heads and a $1/3$ chance of Tails.
+
   If Heads is flipped then you receive $1$ from your opponent. If Tails is flipped then you pay $1$ to your opponent.
+
   You start with $10$ and your opponent starts with $20$. You keep playing until one of you is bankrupt (= has $0$ left).
+
   What is the probability, that your opponent bankrupts?
   </summary>
   One way we may comupte by the Markov chains. Denote $a_x$ the probability of winning the game starting with $x$ dollars ($x=10$ here). We have $3a_{x} = 2a_{x+1} + a_{x-1}$, with boundary condition $a_{30}=1, a_0 = 0$. This soon gives us $b_k = a_k - a_{k-1}$ is a geometric series. The probability of wining is $a_{10} = \sum_{k=1}^{10}b_k$ and we may use the fact $\sum_{k=1}^{30}b_k = 1$ and the sum for first $10$, middle $10$, and last $10$ being $1:2^{-10}:2^{-20}$.
