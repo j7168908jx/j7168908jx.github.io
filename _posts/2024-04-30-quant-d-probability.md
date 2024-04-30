@@ -1,6 +1,6 @@
 ---
 title:  "Question (and Answer) List from Quantitative Researcher - Part 2. Probability"
-excerpt: "More than a copy of it"
+excerpt: "Probability, Expectation, Variance, and more"
 # subtitle: " "
 tag: "Quant"
 layout: post-with-toc
@@ -20,6 +20,92 @@ layout: post-with-toc
 
 
 ### Uncategorized
+
+
+- <details><summary><cite>微信公众号, QIA.</cite>
+  对于n个互不相同的数 $a_1, \dots, a_n$。用如下算法得到其中最大值 $m=a_1$, 依次将 m 与 $a_2, \dots a_n$ 比较 若 $a_i \gt m$, 则令 $m=a_i$. 求对 $m$ 做赋值操作次数的期望次数?
+  </summary>
+  递归, 若 $a_n$ 是最大值, 则操作会比 $a_1, \dots, a_{n-1}$ 多 1, 否则不变.
+
+  $$E_n = \frac1n (E_{n-1}+1) + \frac{n-1}{n}E_{n-1} = E_{n-1} + \frac1n.$$
+
+  从而由于 $E_1 = 1$, 可得 $E_n = \sum_{i=1}^n (1/i)$.
+  </details>
+
+- <details><summary>Roll a 100-side dice and get paid the number it shows. You can roll again by paying 1 dollar. What is the best expected payoff?
+  </summary>
+  Assume we stop if getting top $a$ result and we denote $x$ as the expected payoff, we have
+
+  $$x = \frac{a}{100}\times\frac{200-a+1}{2} + \frac{100-a}{100}(x-1).$$
+
+  Simplify we obtain $a=10\sqrt{2}$.
+  </details>
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  有 N 个点均匀随机分布在半径为 1 的单位球中,设它们距离球心的距离为 $d_1, d_2, \dots d_N$. 设 $D = \min(d_1,d_2,\dots,d_N)$，求 $D$ 的中位数。
+  </summary>
+  ...
+  </details>
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  Two boxes, A and B contain n balls each. In each step, you randomly choose a box and then draw one ball from it. Repeat this until the box you choose actually turns out to be empty. What's the expected number of remaining balls in the other box at the end of this process?
+  </summary>
+  ...
+  </details>
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  The numbers $x_1, x_2, x_3, \dots$ are chosen uniformly at random from $[0, 1]$ and independently from each other as long as they follow the pattern $x_1 \gt x_2$, $x_2 \lt x_3$, $x_3\gt x_4$, $x_4 \lt x_5, \dots$. How many numbers on average can be chosen before the pattern is broken?
+  </summary>
+  ...
+  </details>
+
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  There are N people arriving between 9 a.m. and 10 a.m.. Each waits for 15 minutes after arrival. What is the probability that they meet each other given their arrival time is uniformly distributed.
+  </summary>
+  ...
+  </details>
+
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  在球面上任取 5 个点，位于同一个半球的概率是多少?
+  </summary>
+  ...
+  </details>
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  Assume $X, Y$ are i.i.d. standard normal distribution r.v., find the expectation and variance of $(X ~\text{given}~ X+Y=1)$.
+  </summary>
+  ...
+  </details>
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  有一个三角形ABC，一开始在A点，每一时刻向每个点移动的概率都是1/2，求第一次把每一条边都走过的移动次数的期望。然后再拓展至四面体ABCD的情形
+  </summary>
+  ...
+  </details>
+
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  一个圆随机生成三条弦把圆划分的区域数量的期望
+  </summary>
+  ...
+  </details>
+
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  绿皮书上的醉汉选座位拓展到k个醉汉的情形。
+  </summary>
+  ...
+  </details>
+
+
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  在单位圆内随机扔两个点A和B，三角形OAB是钝角三角形的概率。
+  </summary>
+  ...
+  </details>
 
 
 - <details><summary><cite>Redbook, 红薯哥.</cite>

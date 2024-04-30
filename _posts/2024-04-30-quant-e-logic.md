@@ -1,6 +1,6 @@
 ---
 title:  "Question (and Answer) List from Quantitative Researcher - Part 1. Logic"
-excerpt: "More than a copy of it"
+excerpt: "Brain teasers, logic puzzles, and more"
 # subtitle: " "
 tag: "Quant"
 layout: post-with-toc
@@ -21,12 +21,24 @@ layout: post-with-toc
 ### Uncategorized
 
 - <details><summary><cite>Redbook, 红薯哥.</cite>
-  N个相同的桶，m 个不同的球，有多少种方法 distribute m balls in N 桶? Follow up: 如果每个桶至少要有 k 球呢?
+  If n is a random positive integer, what is the probability that $2^n$ starts with the digit 1?
   </summary>
   ...
   </details>
 
 
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  Draw N (N > 3) i.i.d. points uniformly from interval $(0, 1]$. Define the neighbor of a point as the closest point to it (excluding itself). If the neighbor of its neighbor is the point itself we call this point a good point. The expectation of the number of good points is $f(N)$. What is $f(N)$ in general?
+  </summary>
+  ...
+  </details>
+
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  N个相同的桶，m 个不同的球，有多少种方法 distribute m balls in N 桶? Follow up: 如果每个桶至少要有 k 球呢?
+  </summary>
+  ...
+  </details>
 
 - <details><summary><cite>Redbook, 红薯哥.</cite>
   N 只球队两两比赛，赢的队伍得 2 分，输的得 0 分，如果打平则各得 1分。已知所有队伍积分的一半都是从末尾 10 支队伍上赢来的。那么 N 是多少?
