@@ -6,7 +6,75 @@ tag: "Quant"
 layout: post-with-toc
 ---
 
-## Brain Teasers
+<!-- template
+
+- <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
+  ...
+  </summary>
+  ...
+  </details>
+
+-->
+
+## Logic
+
+### Uncategorized
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  N个相同的桶，m 个不同的球，有多少种方法 distribute m balls in N 桶? Follow up: 如果每个桶至少要有 k 球呢?
+  </summary>
+  ...
+  </details>
+
+
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  N 只球队两两比赛，赢的队伍得 2 分，输的得 0 分，如果打平则各得 1分。已知所有队伍积分的一半都是从末尾 10 支队伍上赢来的。那么 N 是多少?
+  </summary>
+  ...
+  </details>
+
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  Given $\mathbb E(X), \mathbb E(\max(k, X)), \mathbb E(\min(k, X))$ for all $k$, write a formula for $\mathbb E(f(X))$ if $f\in\mathcal C^2(\mathbb R)$. (See Carr-Madan Formula)
+  </summary>
+  ...
+  </details>
+
+
+- <details><summary><cite>Redbook, Newjoy.</cite>
+  从1到1000000的所有数字的位数之和是多少?注意位数之和不是数字本身，举例，对于11，位数之和为 1+1=2
+  </summary>
+  ...
+  </details>
+
+
+- <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
+  能否找到 n 阶矩阵，每个矩阵元为 -1,0,1, 使得所有的行和和列和都互不相同
+  </summary>
+  ...
+  </details>
+
+
+
+- <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
+  有多少 n 阶 01 矩阵满足每行的和和每列的和都是奇数
+  </summary>
+  We can always consider the left upper $n-1$ size square matrix. For any combinations of $0$ and $1$ in this submatrix, the last row and last column (both except the last element) will be determined by the parity of the submatrix. Then, an important argument is that the last row and the last column's parity must be the same. Thus, the last element is determined. The total number of such matrices is $2^{(n-1)^2}$.
+  </details>
+
+- <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
+  有一个拍卖，有两枚均匀 1-6 子，抛完后两枚子朝上数字之和为 contract 的价值。你和另一个人轮流 bid，先手顺序随机。只能 bid 整数。你可以看到第一个骰子的数字，你对手可以看到第二个骰子的数字。问最优策略和先手的期望收益
+  </summary>
+  ...
+  </details>
+
+
+- <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
+  A 是 n 阶 01 矩阵，每一行的1都连续出现，求证 det(A) in -1, 0, 1
+  </summary>
+  We may only consider the case $\mathrm{det}(A) = \pm1$, which means $A$ has full rank. In this case, we can assert that each row must have at least one $1$. Now, think of the start index of $1$ in each row. Either the start index of $1$ in all rows differ, or there will be two rows with the same start index. In the first case, we can swap the rows to make the matrix upper triangular, and the determinant up to row permutation is 1, which means $\pm1$ before any permutation. In the second case, we can substract the row of less $1$-s buy the one having more (they cannot have equal many $1$-s or the matrix is not full rank). Do this until all rows start with different index. We can be sure that this will not last forever since each time the total number of $1$ is reduced. Then we can swap the rows to make the matrix upper triangular, and the determinant up to row permutation is 1, which means $\pm1$ before any permutation.
+  </details>
+
 
 ### Problem Simplification
 

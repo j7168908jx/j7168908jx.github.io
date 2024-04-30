@@ -6,7 +6,15 @@ tag: "Quant"
 layout: post-with-toc
 ---
 
-<!-- template -->
+<!-- template
+
+- <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
+  ...
+  </summary>
+  ...
+  </details>
+
+-->
 
 ## Probability Theory
 
@@ -14,12 +22,48 @@ layout: post-with-toc
 ### Uncategorized
 
 
-- <details><summary><cite>Redbook, 爱跳舞的papaya</cite>
-  $A$ 是 n 阶 01 矩阵，$A^2=0$，求矩阵中1的个数的最大值
+- <details><summary><cite>Redbook, 红薯哥.</cite>
+  做一个游戏，给 $n$ 个随机变量，$x_1,x_2,\dots, x_n$, iid uniformly distributed from (0,1). 依次猜测每个 $x_i$ 在 $n$ 个变量中的大小排名 (从 $x_1$ 到 $x_n$) 如果全部猜对则获得胜利。问你的best strategy 和采用这种 strategy 取胜的概率
   </summary>
-  Convert this problem to the connectivity of directed graphs. The condition requires any path found on the graph cannot have length greater than $1$. These means the graph is separated into two parts. The maximum number must be $\mathrm{floor}(n/2) * (n-\mathrm{floor}(n/2))$
+  ...
   </details>
 
+
+- <details><summary><cite>Redbook, Newjoy.</cite>
+  三个变量服从 $U(0, 6)$ 问任意两变量差均 $\gt 1$ 的概率.
+  </summary>
+  (**todo**: not yet finished.)
+  The probability is the volume of the region $|x-y| > 1, |y-z| > 1, |z-x| > 1$ divided by the volume of the cube $[0, 6]^3$.
+  </details>
+
+- <details><summary><cite>Redbook, Newjoy.</cite>
+  你竞拍一枚硬币。你确信硬币的价格在0到100之间，如果你的出价大于价格，你就赢了，并以1.5倍的价格卖给你的朋友。你的出价是多少，才能获得最大的利润?
+  </summary>
+  Given the price $p$, the expected profit is $1.5p-b$ if bidding $b$ and $b > p$ . Compute the expectation of the profit,
+  $$\mathbb E(1.5p-b  \cdot 1_{\{b > p\}})$$
+
+  todo
+  </details>
+
+
+- <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
+  随机变量 $Y\sim U(0, 100)$, 求 $X > 0$ s.t. $P([(100-X)/Y] > [(100-Y)/X])$ 最大, $[a]$ 表示不超过 $a$ 的最大整数
+  </summary>
+  ...
+  </details>
+
+
+- <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
+  52张牌，抽4张，求点数的中位数, 平方和, 红牌的张数的期望和方差
+  </summary>
+  ...
+  </details>
+
+- <details><summary><cite>Redbook, 爱跳舞的papaya.</cite>
+  A 是 n 阶矩阵，每个元素为 -1 或 1 (等概率)，求 Var(det(A))
+  </summary>
+  Consider these $n!$ permutations of all the terms to compute the determinant. Each term is considered as an variable and thus has variance $1$ (half prob. for $+1$ and half prob. for $-1$). The cross term, i.e., the covariance of two terms, must be 0 since there will be at least one index different, and this makes these two r.v. uncorrelated (See the classical problem: Is a game guessing even/odd heads fair if only the last coin is fair?). Thus, the variance of the determinant is $n!$.
+  </details>
 
 
 
