@@ -18,9 +18,9 @@ layout: post-with-toc
 
 ## Misc
 
-- <details><summary>What are the conditions for an integer matrices to have an inverse such that elements in this inverse are all integers?
+- <details><summary>What are the conditions for an integer matrix to have an inverse such that elements in this inverse are all integers?
   </summary>
-  Sufficient and necessary condintion would be the determinant being $\pm1$.
+  Sufficient and necessary condition would be the determinant being $\pm1$.
 
   Easily for necessary, $\mathrm{det}(A^{-1}) = 1/\mathrm{det}(A)$.
 

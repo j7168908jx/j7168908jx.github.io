@@ -71,7 +71,7 @@ layout: post-with-toc
 
   A 30-sided die is rolled and whoever's number is the closest to the die's number is the "winner" of the game and gains points according to what they guessed.
 
-  e.g. Player 1 picks number 20 and player 2 picks number 15.The die lands on the number 18 so player 1 wins and gets 20 points.
+  e.g. Player 1 picks number 20 and player 2 picks number 15. The die lands on the number 18 so player 1 wins and gets 20 points.
 
   (Note that you can choose whether or not to go first or second in picking a number (you will know the other player's number if you go second)).
 
@@ -116,3 +116,5 @@ layout: post-with-toc
   - Follow up: one box, $K=100$. Play $1,000$ times. lf Jack claims that he writes $80$ every time, what is your strategy?
   </details>
 
+
+- Consider the following game. Beginning with a deck of even size = N cards that are half red and half green(N/2 each), you begin drawing cards. For each red card, you win 1 and for each green card, you lose 1. You may stop at any time. What is the value of this game to you assuming you play optimally? Write a program that computes this value.

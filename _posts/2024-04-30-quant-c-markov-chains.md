@@ -58,7 +58,7 @@ layout: post-with-toc
   </details>
 
 - <details><summary><cite>Redbook, 红薯哥.</cite>
-  Three frogs are jumping on the vertices of an equilateral triangle. A vertex can be occupied by more than one frog. Every minute, each frog jumps from the vertex where it is located to one of the other two vertices, each being equal likely. The frogs choose where to jump independently of each other. If initially each vertex contains exactly one frog, how long does it take on average for all the frogs to meet at the same vertex?
+  Three frogs are jumping on the vertices of an equilateral triangle. A vertex can be occupied by more than one frog. Every minute, each frog jumps from the vertex where it is located to one of the other two vertices, each being equally likely. The frogs choose where to jump independently of each other. If initialy each vertex contains exactly one frog, how long does it take on average for all the frogs to meet at the same vertex?
   </summary>
   ...
   </details>

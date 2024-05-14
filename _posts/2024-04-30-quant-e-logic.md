@@ -230,3 +230,14 @@ Others:
 2. Rainbow hats (hard)
   - 7 color 7 prisoners, guess without communication, at least one correct then all free
 
+
+## Not yet catgorized
+
+
+- Assume a Fibonacci sequence $\{a_n\}$ such that $a_1=a_2=1$ and $a_{i+2} = a_{i+1} + a_{i}$. Find a polynomial of order 1009 $p(n)$ such that on some integers we have $p(2n+1) = a_{2n+1}$ where $n=0,\dots, 1009$. Now we claim that $p(2021) = a_{j} - a_{k}$. Find $j$ and $k$ and prove that this pair is unique.
+
+
+- <details><summary>八盏灯围成一个环，各自初始化明暗状态，灯每秒都会同时变化一次：如果跟右边的灯颜色相同，变暗；如果颜色不同，变亮。最多多少秒后，所有灯都会暗下来。
+  </summary>
+  假设8个灯的状态分别是 $a_1,\dots, a_8$, 硬算8轮后第一个灯的状态.
+  </details>

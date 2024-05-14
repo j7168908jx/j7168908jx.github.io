@@ -33,9 +33,9 @@ layout: post-with-toc
   </details>
 
 - <details><summary>
-  Roll a 100-side dice and get paid the number it shows. You can roll again by paying 1 dollar. What is the best expected payoff?
+  Roll a 100-side die and get paid the number it shows. You can roll again by paying 1 dollar. What is the best expected payoff?
   </summary>
-  Assume we stop if getting top $a$ result and we denote $x$ as the expected payoff, we have
+  Assume we stop if we get top $a$ result and we denote $x$ as the expected payoff, we have
 
   $$x = \frac{a}{100}\times\frac{200-a+1}{2} + \frac{100-a}{100}(x-1).$$
 
@@ -181,7 +181,10 @@ layout: post-with-toc
 2. Card game
   - 52 cards, compare you and dealer's number, only if you are larger you win, P(win) ?
 3. Drunk passenger
-  - 100 passenger, 1st drunk, P(last passenger in correct seat)
+  - <details><summary>100 passenger, 1st drunk, P(last passenger in correct seat)
+    </summary>
+    There is another interesting proof. If we represent the seating state using cyclic notation like $(1348)$ meaning 1 sat at 3, 3 sat at 4..., we can assert that there will be only a single cyclic containing $1$, and the cyclic must be ascending, i.e., $(132)$ will not occur. All possible cycles are $2^{n-1}$, (each person $2$ to $n$ decides whether inside the cycle or not), and all possible cycles with $n$ not inside will be exactly half of them.
+    </details>
 4. N points on a circle
   - N points drawn randomly on the circumference of a circle, P(all points lie on a semicircle) ?
 
@@ -255,3 +258,19 @@ layout: post-with-toc
 3. Random ants
 
 ## Stochastic Processes and Stochastic Calculus
+
+
+## Not yet categorized
+
+### From MemesFromDreas
+
+- 投一个骰子不停直到连续按顺序出现1-2-3这三个点数时停止，停下来的时候恰好投了奇数次的概率？
+-  You have 100 red and 100 black marbles, to be distributed into two jars. Once distributed, a jar will be selected at random, and a marble randomly selected. What distribution of marbles will minimize the chance of getting a red marble?
+
+
+- <details><summary>[Source.](https://math.stackexchange.com/questions/2763/what-is-the-expected-number-of-runs-of-same-color-in-a-standard-deck-of-cards/2764#2764)一副扑克牌只看红黑，洗牌后按顺序看整副牌平均颜色会有多少次变化？
+  </summary>
+  Use linearity of expectation. The prob. of the color of $n$ and $n+1$ being different is the same as $X_1 \neq X_2$, which is $26/51$. The total is $51 \times 26 / 51 = 26$.
+  </details>
+
+- Given a twelve-sided die, you roll the die repeatedly until the cumulative sum is odd. What is the number of the cumulative sum you can have with the highest probability?
