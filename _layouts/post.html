@@ -23,9 +23,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
-  <link rel="stylesheet" href="{{ '/assets/css/post.css?v=' | append: site.github.build_revision | relative_url }}"> {%
-  include head-custom.html %}
-
+  <link rel="stylesheet" href="{{ '/assets/css/post.css?v=' | append: site.github.build_revision | relative_url }}">
+  {% include head-custom.html %}
+  {% include post-header-custom.html %}
+  
 </head>
 
 
@@ -41,6 +42,8 @@
     </div>
     <div id="content" class="main-content" role="main">
       {{ content }}
+    </div>
+    <div id="discussion" class="giscus" role="complementary">
     </div>
   </main>
 
