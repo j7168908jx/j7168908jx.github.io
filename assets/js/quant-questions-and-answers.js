@@ -49,7 +49,9 @@ function createFilterButtons() {
 function createQuestionTags() {
     const sections = document.querySelectorAll('.main-content section');
     sections.forEach(section => {
-        const tags = section.getAttribute('data-tags').split(' ');
+        const attr = section.getAttribute('data-tags');
+        if (!attr) return;
+        const tags = attr.split(' ');
         tags.forEach(tag => {
             const button = document.createElement('button');
             button.classList.add('tag');

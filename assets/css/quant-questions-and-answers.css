@@ -3,13 +3,15 @@
     display: flex;
     justify-content: left;
     margin-bottom: 1em;
+    flex-wrap: wrap;
+    flex-direction: row;
 }
 
 .button-area .btn {
     display: inline-block;
     box-sizing: border-box;
     padding: 0.3em 1em;
-    margin: 0em 0.5em 0em 0.5em;
+    margin: 0.2em 0.5em 0.2em 0.5em;
     font-family: inherit;
     font-size: inherit;
     font-weight: 500;
@@ -33,10 +35,18 @@
     margin-bottom: 1em;
 }
 
-.main-content section .source-tag::before {
+/* psuedo horizontal separator */
+.main-content section::after {
+    content: "";
+    display: block;
+    margin: 1em 0em;
+    border-bottom: 1px solid #ccc;
+}
+
+/* .main-content section .source-tag::before {
     content: "Source: ";
     font-weight: bold;
-}
+} */
 
 .main-content section .tag {
     display: inline-block;

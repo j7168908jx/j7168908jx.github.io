@@ -13,6 +13,9 @@ MathJax.Hub.Config({
   "HTML-CSS": {
     scale: 80, linebreaks: { automatic: true }
   },
+  "CommonHTML": {
+    scale: 80, linebreaks: { automatic: true }
+  }
 
 });
 
