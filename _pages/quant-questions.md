@@ -985,6 +985,16 @@ Given two real symmetrix matrix $A, B$, what is the range of eigenvalues of $A+B
 </section>
 
 
+<section id="is-k-in-fibonacci-sequence" data-tags="logic">
+### Is k in Fibonacci Sequence?
+
+由a和b两个不保证同号的整数开始，构造斐波那契数列（也就是第三个 a+b，这样往后）
+对于给定某个整数 k，给出算法判断k 是否在这个数列里？这个算法的复杂度是多少？
+
+<div class="go"></div>
+</section>
+
+
 
 
 

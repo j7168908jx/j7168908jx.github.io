@@ -470,6 +470,21 @@ Then we can swap the rows to make the matrix upper triangular, and the determina
 </section>
 
 
+<section id="is-k-in-fibonacci-sequence">
+### Is k in Fibonacci Sequence?
+
+如果a b 同号了，那么接下来只要硬算就能在log(k)的时间内算出结果在不在，
+在同号之前的情况我们叫做艰难情况。
+
+在艰难情况下，考虑这样一个例子: `11 -7 4 -3 1 -2 -1 -3`. 这个例子说明了不定号的这段时间内
+数字的绝对值是递减的。那么这一段最长的情况下有多长呢？
+考虑一个例子 $a=1024$, 这时候是不是你想不出一个办法使得 a+b (第三个数) 大于512 并且保持接着往后是异号的？
+这意味着第三个数至多是 $a/2$. 这意味着这一段至多只需要 $2\log(|a|)$ 步 （可能差了一两步）就能完成。
+
+因此总的代价至多是 log 的。
+
+<div class="go"></div>
+</section>
 
 </div>
 <!-- The end of answer area -->
@@ -477,3 +492,5 @@ Then we can swap the rows to make the matrix upper triangular, and the determina
 <!-- include css/js -->
 <link rel="stylesheet" href="assets/css/quant-questions-and-answers.css">
 <script src="assets/js/quant-questions-and-answers.js"></script>
+
+<!-- todo: ignore data-tags in this page -->
