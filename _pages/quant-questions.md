@@ -486,7 +486,7 @@ A 和 B 在 2xn 的模盘上进行如下游戏: A 先行，A 用 1x2 的横格�
 </section>
 
 
-<section id="guessing-coin-toss" data-tags="matble strategy">
+<section id="guessing-coin-toss" data-tags="marble strategy">
 ### Guess Coin Toss Based on Marble Movements
 <!-- <p class="source-tag">.</p> -->
 
@@ -990,6 +990,31 @@ Given two real symmetrix matrix $A, B$, what is the range of eigenvalues of $A+B
 
 由a和b两个不保证同号的整数开始，构造斐波那契数列（也就是第三个 a+b，这样往后）
 对于给定某个整数 k，给出算法判断k 是否在这个数列里？这个算法的复杂度是多少？
+
+<div class="go"></div>
+</section>
+
+
+
+
+<section id="parametric-dice" data-tags="dice probability">
+### Parametric Dice
+
+You made a 6-sided die, where the probability of showing 1 is $p_1\sim U(0, 1)$, 2 is $p_2\sim U(0, 1-p_1)$, and so on till the last one having $1-(p_1+\dots+p_5)$.
+
+Since you have made this die, you roll it and it shows 2. What is the probability of the next roll is still 2?
+
+<div class="go"></div>
+</section>
+
+
+
+
+<section id="flip-sequence-coin" data-tags="coin logic game">
+### Flip a Sequence of Coins
+
+A sequence of 2000 coins are head-up placed. Player A and B are taking turns to play the game. The only valid move is that one chooses a head-up coin $k$ such that there are at least 49 coins after $k$ and it flips coins $k\sim k+49$. The one who cannot find a valid move loses.
+Who will win the game? Can you ensure the game will be ended in finite moves?
 
 <div class="go"></div>
 </section>

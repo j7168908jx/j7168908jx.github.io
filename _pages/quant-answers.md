@@ -486,6 +486,31 @@ Then we can swap the rows to make the matrix upper triangular, and the determina
 <div class="go"></div>
 </section>
 
+
+<section id="parametric-dice" data-tags="">
+### Parametric Dice
+
+One can safely merge the case of showing 3 to 6 with prob $1-p_1-p_2$. In this case, the prob is
+
+$$\begin{aligned}
+\mathbb P(\xi_2=2|\xi_1=2) &= \frac{\mathbb P(\xi_2=2, \xi_1=2)}{\mathbb P(\xi_1=2)} = \frac{\mathbb E[p_2^2]}{\mathbb E[p_2]} \\
+&=\frac{\int_0^1\int_0^{1-p_1}p_2/(1-p_1)~\mathrm dp_2\mathrm dp_1}{\int_0^1\int_0^{1-p_1}p_2^2/(1-p_1)~\mathrm dp_2\mathrm dp_1} = 4/9.
+\end{aligned}$$
+
+<div class="go"></div>
+</section>
+
+
+<section id="flip-sequence-coin" data-tags="">
+### Flip a Sequence of Coins
+
+注意到在任何一次操作的时候, 硬币1, 51, 101, ... 1951 恰好会有一个被翻面. 而获胜的时候这些面必须全部朝下，从而恰好需要被翻偶数次. 因此后手必胜。注意到第1个硬币最多可能被翻1次, 第2个最多可能被翻2次, 第 $k$ 个最多被翻 $2^{k-1}$ 次, 游戏必然会在有限次内结束.
+
+<div class="go"></div>
+</section>
+
+
+
 </div>
 <!-- The end of answer area -->
 
