@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Fibonacci Sphere</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        #slider-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<div id="slider-container">
+    <label for="samples-slider">Number of Samples:</label>
+    <input type="range" id="samples-slider" min="10" max="1000" value="100">
+    <span id="samples-value">100</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    let scene, camera, renderer;
+    let pointsGeometry, pointsMaterial, points;
+
+    function fibonacciSphere(samples) {
+        const points = [];
+        const phi = Math.PI * (Math.sqrt(5.) - 1.); // golden angle in radians
+
+        for (let i = 0; i < samples; i++) {
+            const y = 1 - (i / (samples - 1)) * 2; // y goes from 1 to -1
+            const radius = Math.sqrt(1 - y * y); // radius at y
+
+            const theta = phi * i; // golden angle increment
+
+            const x = Math.cos(theta) * radius;
+            const z = Math.sin(theta) * radius;
+
+            points.push(x, y, z);
+        }
+
+        return new Float32Array(points);
+    }
+
+    function init() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const samplesSlider = document.getElementById('samples-slider');
+        const samplesValue = document.getElementById('samples-value');
+
+        samplesSlider.addEventListener('input', () => {
+            const samples = parseInt(samplesSlider.value);
+            samplesValue.textContent = samples;
+            updatePoints(samples);
+        });
+
+        updatePoints(parseInt(samplesSlider.value));
+
+        camera.position.z = 3;
+    }
+
+    function updatePoints(samples) {
+        if (points) {
+            scene.remove(points);
+        }
+
+        const positions = fibonacciSphere(samples);
+        pointsGeometry = new THREE.BufferGeometry();
+        pointsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        pointsMaterial = new THREE.PointsMaterial({ color: 0x00ff00, size: 0.01 });
+        points = new THREE.Points(pointsGeometry, pointsMaterial);
+        scene.add(points);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+    }
+
+    init();
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+</body>
+</html>
+
+
+
