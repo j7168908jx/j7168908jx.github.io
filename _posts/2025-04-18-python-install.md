@@ -12,6 +12,7 @@ The first step is to install OpenSSL as the dependency.
 
 ```bash
 export OPSSL_VER=3.0.8
+export OPSSL_INSTALL_DIR=/opt/OpenSSL/$OPSSL_VER
 
 wget https://www.openssl.org/source/openssl-$OPSSL_VER.tar.gz
 wget https://www.openssl.org/source/openssl-$OPSSL_VER.tar.gz.sha256
@@ -21,11 +22,17 @@ rm openssl-$OPSSL_VER.tar.gz.sha256
 
 tar -xzvf openssl-$OPSSL_VER.tar.gz
 cd openssl-$OPSSL_VER/
-./config --prefix=/opt/OpenSSL/$OPSSL_VER --openssldir=/opt/OpenSSL/$OPSSL_VER shared zlib
-make -j
-make test
+./config --prefix=$OPSSL_INSTALL_DIR --openssldir=$OPSSL_INSTALL_DIR shared zlib 2>&1 | tee config.log
+make -j 2>&1 | tee make.log
+make test 2>&1 | tee make-test.log
 
-sudo make install
+sudo mkdir -p $OPSSL_INSTALL_DIR
+sudo chown -R $USER $OPSSL_INSTALL_DIR
+
+make install 2>&1 | tee make-install.log
+
+sudo chown -R root:root $OPSSL_INSTALL_DIR
+
 ```
 
 
@@ -39,8 +46,10 @@ sudo apt-get install libbz2-dev libncurses5-dev libncursesw5-dev libgdbm-dev  li
 
 
 export OPSSL_VER=3.0.8
-export LDFLAGS=-L/opt/OpenSSL/$OPSSL_VER/lib64
-export LD_LIBRARY_PATH=/opt/OpenSSL/$OPSSL_VER/lib64
+export OPSSL_INSTALL_DIR=/opt/OpenSSL/$OPSSL_VER
+
+export LDFLAGS=-L$OPSSL_INSTALL_DIR/lib64
+export LD_LIBRARY_PATH=$OPSSL_INSTALL_DIR/lib64
 
 # ensure you export these env vars before configure!!!
 
@@ -51,24 +60,26 @@ export PY_VER=3.8.12
 export PY_VER=3.10.13
 export PY_VER=3.12.2
 
+export PY_INSTALL_DIR=/opt/Python/$PY_VER
+
 wget https://www.python.org/ftp/python/$PY_VER/Python-$PY_VER.tar.xz --no-check-certificate
 
 
 
 tar -xvf Python-$PY_VER.tar.xz && cd Python-$PY_VER
-LDFLAGS="${LDFLAGS} -Wl,-rpath=/opt/OpenSSL/$OPSSL_VER/lib64" ./configure \
+LDFLAGS="${LDFLAGS} -Wl,-rpath=$OPSSL_INSTALL_DIR/lib64" ./configure \
     --enable-optimizations --enable-loadable-sqlite-extensions \
     --enable-ipv6 --enable-big-digits \
     --with-lto --with-pymalloc \
-    --with-doc-strings --with-openssl=/opt/OpenSSL/$OPSSL_VER \
+    --with-doc-strings --with-openssl=$OPSSL_INSTALL_DIR \
     --enable-shared \
-    --prefix=/opt/Python/$PY_VER > configure.log 2>&1
+    --prefix=$PY_INSTALL_DIR 2>&1 | tee configure.log
 
 # check configure.log
 # check if configure log shows that ssl support is correctly installed! (check the last part of the log to see if any module is not correctly installed)
 grep SSL configure.log
 
-make -j > make.log 2>&1
+make -j 2>&1 | tee make.log
 
 
 # check make.log
@@ -77,19 +88,25 @@ tail -n 25 make.log
 
 
 
-sudo make install
+sudo mkdir -p $PY_INSTALL_DIR
+sudo chown -R $USER $PY_INSTALL_DIR
+
+make install 2>&1 | tee make-install.log
+
+sudo chown -R root:root $PY_INSTALL_DIR
+
 
 # Copy or create modulefiles
 # sudo cp -r modulefiles/Python /etc/modulefiles
 
 # optional
-sudo ln -s /opt/Python/$PY_VER/bin/python3 /opt/Python/$PY_VER/bin/python
-sudo ln -s /opt/Python/$PY_VER/bin/pip3 /opt/Python/$PY_VER/bin/pip
+sudo ln -s $PY_INSTALL_DIR/bin/python3 $PY_INSTALL_DIR/bin/python
+sudo ln -s $PY_INSTALL_DIR/bin/pip3 $PY_INSTALL_DIR/bin/pip
 
-sudo /opt/Python/$PY_VER/bin/python3 -m pip install --upgrade pip
+sudo $PY_INSTALL_DIR/bin/python3 -m pip install --upgrade pip
 
 # install frequently used packages
-sudo /opt/Python/$PY_VER/bin/python3 -m pip install pandas polars scikit-learn numpy matplotlib requests
+sudo $PY_INSTALL_DIR/bin/python3 -m pip install pandas polars scikit-learn numpy matplotlib requests
 
 ```
 
