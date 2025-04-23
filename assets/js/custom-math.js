@@ -1,33 +1,36 @@
-MathJax.Hub.Config({
-  extensions: ["tex2jax.js"],
-  tex2jax: {
-      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-      processEscapes: true,
-      processRefs: true,
-      processEnvironments: true
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    processEscapes: true,
+    processEnvironments: true,
+    tags: 'ams', // auto-numbering for equations
+    macros: {
+      ket: ['\\left\\vert #1 \\right\\rangle', 1],
+      bra: ['\\left\\langle #1 \\right\\vert', 1],
+      braket: ['\\left\\langle #1 \\right\\rangle', 1]
+    }
+
   },
-  TeX: {
-    equationNumbers: { autoNumber: "AMS" },
-    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js", "color.js","autoload-all.js"]
+  options: {
+    renderActions: {
+      addMenu: [] // disable the MathJax right-click menu if desired
+    }
   },
-  "HTML-CSS": {
-    scale: 80, linebreaks: { automatic: true }
+  svg: {
+    scale: 0.8, // 80%
+    linebreaks: { automatic: true }
   },
-  "CommonHTML": {
-    scale: 80, linebreaks: { automatic: true }
+  chtml: {
+    scale: 0.8,
+    linebreaks: { automatic: true }
+  },
+  loader: {
+    load: [
+      '[tex]/ams',
+      '[tex]/autoload',
+      '[tex]/color',
+      '[tex]/noerrors',
+      '[tex]/noundefined'
+    ]
   }
-
-});
-
-MathJax.Hub.Register.StartupHook("TeX Jax Ready", function () {
-    MathJax.InputJax.TeX.Definitions.Add({
-        macros: {
-            ket: ["Macro", "{\\left\\vert #1 \\right\\rangle}", 1],
-            bra: ["Macro", "{\\left\\langle #1 \\right\\vert}", 1],
-            braket: ["Macro", "{\\left\\langle #1 \\right\\rangle}", 1],
-        }
-    });
-});
-
-MathJax.Ajax.loadComplete("/assets/js/custom-math.js");
-
+};

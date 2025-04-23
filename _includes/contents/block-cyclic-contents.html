@@ -1,0 +1,63 @@
+
+
+<div class="config-area" markdown="0">
+    <h3>Add Matrix</h3>
+    <p>
+    <label for="nprow">Process group size:</label>
+    <input type="number" id="nprow" min="1" value="2">
+    <label for="npcol">x</label>
+    <input type="number" id="npcol" min="1" value="2">
+    </p>
+    <p>
+    <label for="matrix-rows">Matrix size:</label>
+    <input type="number" id="matrix-rows" min="1"
+        value="16">
+    <label for="matrix-cols">x</label>
+    <input type="number" id="matrix-cols" min="1"
+    value="16">
+    </p>
+    <p class="matrix-type-group">
+    Matrix type:
+    <label><input type="radio" name="matrix-type" value="n"
+        checked> Normal</label>
+    <label><input type="radio" name="matrix-type" value="u">
+        Upper triangular</label>
+    <label><input type="radio" name="matrix-type" value="l">
+        Lower triangular</label>
+    </p>
+    <p>
+    <label for="mb">Block size:</label>
+    <input type="number" id="mb" min="1" value="4">
+    <label for="nb">x</label>
+    <input type="number" id="nb" min="1" value="4">
+    </p>
+    <p>
+    <label for="rowsrcproc">Starting process row:</label>
+    <input type="number" id="rowsrcproc" min="0" value="0">
+    <label for="colsrcproc">column:</label>
+    <input type="number" id="colsrcproc" min="0" value="0">
+    </p>
+    <p>
+    <button id="add-matrix">Add Matrix</button>
+    <button id="undo">Undo</button>
+    <button id="clear">Clear</button>
+    <h3>Add Symbol</h3>
+    <input id="math-text">
+    <button id="add-math-text">Add Math Text</button>
+    </p>
+    <!-- add a cellSize +/- button -->
+    <p>
+    Matrix cell size: <span id="cell-size-display"></span>
+    <button id="increase-cell-size">+</button>
+    <button id="decrease-cell-size">-</button>
+</p>
+</div>
+
+<!-- Output Area -->
+<div class="output-area" id="output-area" markdown="0">
+    <canvas id="canvas"></canvas>
+</div>
+
+<!-- add block-cyclic.js -->
+<script src="/assets/js/block-cyclic.js"></script>
+<link rel="stylesheet" href="/assets/css/block-cyclic.css">
