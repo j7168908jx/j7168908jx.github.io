@@ -3,7 +3,8 @@ title:  "C++ String Cheatsheet"
 excerpt: ""
 # subtitle: " "
 tag: "C/C++"
-layout: post-with-toc
+layout: post
+toc: true
 ---
 
 Source: [http://c.biancheng.net/view/400.html](http://c.biancheng.net/view/400.html)

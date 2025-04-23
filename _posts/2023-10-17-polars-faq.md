@@ -3,7 +3,8 @@ title:  "Polars Cheatsheet (WIP)"
 excerpt: "This post(note) summarized some FAQs asked by myself during my working experiences."
 # subtitle: " "
 tag: "Python"
-layout: post-with-toc
+layout: post
+toc: true
 ---
 
 [User guide](https://pola-rs.github.io/polars/user-guide/)

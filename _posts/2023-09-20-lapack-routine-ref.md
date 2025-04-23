@@ -3,7 +3,8 @@ title:  "(Sca)LAPACK Routine Reference"
 excerpt: "Simply a copy of netlib"
 # subtitle: " "
 tag: "High-performance Computing"
-layout: post-with-toc
+layout: post
+toc: true
 ---
 
 ## Before

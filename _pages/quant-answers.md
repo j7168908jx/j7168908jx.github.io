@@ -3,7 +3,8 @@ title:  "Interview Questions for Quantitative Researchers - Answers"
 excerpt: ""
 # subtitle: " "
 tag: "Quant"
-layout: post-with-toc
+layout: post
+toc: true
 ---
 
 

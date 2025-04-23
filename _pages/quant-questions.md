@@ -3,7 +3,8 @@ title:  "Interview Questions for Quantitative Researchers"
 excerpt: ""
 # subtitle: " "
 tag: "Quant"
-layout: post-with-toc
+layout: post
+toc: true
 ---
 
 In this page, I collect some questions that are frequently asked in interviews for quantitative researchers. The questions are categorized by topics.

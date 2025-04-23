@@ -4,12 +4,11 @@ published: true
 description: Find interesting (?) posts here
 title: Post List
 subtitle: "Xiang Li's Homepage"
+toc: true
 ---
 
-<!-- <h2>Sort by post tags</h2> -->
-
 {% for tag in site.tags %}
-<h3>{{ tag[0] }}</h3>
+<h3 id="{{ tag[0] | slugify }}">{{ tag[0] }}</h3>
 <ul class="listing">
     {% for post in tag[1] %}
     <li>

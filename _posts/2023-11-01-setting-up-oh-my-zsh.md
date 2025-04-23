@@ -3,7 +3,8 @@ title:  "Setting up Oh My Zsh"
 excerpt: "Just getting started with `Zsh`."
 # subtitle: " "
 tag: "Linux"
-layout: post-with-toc
+layout: post
+toc: true
 ---
 
 This tutorial follows [GeekHour's Guide](https://www.geekhour.net/2023/10/21/linux-terminal/).

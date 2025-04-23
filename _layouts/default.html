@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang | default: "en-US" }}">
+<html lang="{{ site.lang | default: 'en-US' }}">
 
 <head>
   <meta charset="UTF-8">
@@ -23,8 +23,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#157878">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
 
+  <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
   {% include head-custom.html %}
 
   {% if page.extra_js %}
@@ -35,21 +35,23 @@
 
 
 <body>
-
   {% include header.html %}
 
   <main class="main-frame">
     <div class="sidebar sidebar-primary" role="navigation">
       {% include sidebar-primary.html %}
     </div>
+    {% if page.toc == true %}
+    <div class="sidebar sidebar-secondary" role="navigation">
+    {% else %}
     <div style="display: none" class="sidebar sidebar-secondary" role="navigation">
+    {% endif %}
       {% include sidebar-secondary.html %}
     </div>
     <div id="content" class="main-content" role="main">
       {{ content }}
     </div>
   </main>
-
 
   {% include footer.html %}
 
