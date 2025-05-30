@@ -87,7 +87,7 @@ if __name__ == "__main__":
 ```
 
 ```python
-# joblib_main.py
+# main2.py
 from joblib import Parallel, delayed
 from foo import f, print_handlers, f2
 import logging
