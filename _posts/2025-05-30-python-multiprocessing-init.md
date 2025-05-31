@@ -4,6 +4,7 @@ subtitle: ""
 tag: "Python"
 layout: post
 excerpt: "This post presents practical examples that demonstrate the complexity of worker initialization in Python's process-based parallelization."
+toc: true
 ---
 
 The story starts when I tried to implement a customized logger from the `logging` module in Python, which I wanted to use in a parallelized task. Then I defined a global variable logger and used tricks to ensure it is initialized when first imported. When I move on to parallelize my application, I was surprised (no I don't) to find that the logger's state was not preserved across different worker processes (i.e., the handlers, the formatters, etc.). This led me to investigate how worker processes are initialized in Python's `multiprocessing` and `joblib` packages.
