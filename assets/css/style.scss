@@ -55,8 +55,9 @@ summary::marker {
     }
 
     .listing li {
-        span {
+        span.float-right {
             float: right;
+            padding-left: 1rem;
         }
 
         .post-excerpt {

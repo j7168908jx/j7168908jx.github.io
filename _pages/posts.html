@@ -7,15 +7,104 @@ subtitle: "Xiang Li's Homepage"
 toc: true
 ---
 
-{% for tag in site.tags %}
-<h3 id="{{ tag[0] | slugify }}">{{ tag[0] }}</h3>
-<ul class="listing">
-    {% for post in tag[1] %}
-    <li>
-        <span>{{ post.date | date: "%B %-d, %Y" }}</span>
-        <a href="{{ post.url }}">{{ post.title }}</a>
-        <div class="post-excerpt">{{ post.excerpt }}</div>
-    </li>
+<!-- Toggle Buttons -->
+<div class="button-group">
+    <button id="btn-sort-by-tag" onclick="showByTag()" class="active">Sort by Tag</button>
+    <button id="btn-sort-by-date" onclick="showByDate()">Sort by Date</button>
+</div>
+
+<style>
+    .button-group {
+        display: inline-flex;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        overflow: hidden;
+        font-family: sans-serif;
+        margin-bottom: 1.8em;
+        font-size: 0.8em;
+    }
+
+    .button-group button {
+        border: none;
+        background: #f9f9f9;
+        padding: 0.5em 1em;
+        cursor: pointer;
+        transition: background 0.3s;
+        outline: none;
+    }
+
+    .button-group button:not(:last-child) {
+        border-right: 1px solid #ccc;
+    }
+
+    .button-group button.active {
+        background: #ddd;
+        font-weight: bold;
+    }
+
+    .button-group button:first-child {
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+    }
+
+    .button-group button:last-child {
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }
+
+    .button-group button:hover {
+        background: #eee;
+    }
+</style>
+
+<!-- Posts by Tag -->
+<div id="posts-by-tag">
+    {% for tag in site.tags %}
+    <h3 id="{{ tag[0] | slugify }}">{{ tag[0] }}</h3>
+    <ul class="listing">
+        {% for post in tag[1] %}
+        <li>
+            <span class="float-right">{{ post.date | date: "%B %-d, %Y" }}</span>
+            <a class="post-title" href="{{ post.url }}">{{ post.title }}</a>
+            <div class="post-excerpt">{{ post.excerpt }}</div>
+        </li>
+        {% endfor %}
+    </ul>
     {% endfor %}
-</ul>
-{% endfor %}
+</div>
+
+<!-- Posts by Date -->
+<div id="posts-by-date" style="display: none;">
+    <ul class="listing">
+        {% assign sorted_posts = site.posts | where_exp: "post", "post.ext == '.md'" | sort: 'date' | reverse %}
+
+        {% for post in sorted_posts %}
+        <li>
+            <span class="float-right">{{ post.date | date: "%B %-d, %Y" }}</span>
+            <a class="post-title" href="{{ post.url }}">{{ post.title }}</a>
+            <div class="post-excerpt">{{ post.excerpt }}</div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- JavaScript Toggle Logic -->
+<script>
+function showByTag() {
+    document.getElementById('posts-by-tag').style.display = 'block';
+    document.getElementById('posts-by-date').style.display = 'none';
+    document.getElementById('sidebar-secondary-nav').style.display = 'block';
+
+    document.getElementById('btn-sort-by-tag').classList.add('active');
+    document.getElementById('btn-sort-by-date').classList.remove('active');
+}
+
+function showByDate() {
+    document.getElementById('posts-by-tag').style.display = 'none';
+    document.getElementById('posts-by-date').style.display = 'block';
+    document.getElementById('sidebar-secondary-nav').style.display = 'none';
+
+    document.getElementById('btn-sort-by-tag').classList.remove('active');
+    document.getElementById('btn-sort-by-date').classList.add('active');
+}
+</script>

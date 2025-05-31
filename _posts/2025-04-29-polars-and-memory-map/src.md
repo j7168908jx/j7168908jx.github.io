@@ -21,7 +21,7 @@ Key takeaways:
    - Any written data that was not persisted elsewhere is lost forever.
 
 
-Memory mapping is a widely used technique to optimize memory usage and minimize unnecessary I/O operations.  
+Memory mapping is a widely used technique to optimize memory usage and minimize unnecessary I/O operations.
 Polars, a fast DataFrame library in Rust and Python, supports memory mapping for reading and writing DataFrames using the **Feather** file format—a simple, user-friendly flavor of the Arrow IPC format.
 
 For performance reasons, we leverage Polars DataFrames to help reduce memory consumption when processing large volumes of data.
@@ -30,10 +30,10 @@ For performance reasons, we leverage Polars DataFrames to help reduce memory con
 
 ## Background
 
-As many Python developers know, the Global Interpreter Lock (GIL) limits true thread-based parallelism for CPU-bound tasks (at least for now!). As a result, users often turn to **process-based parallelism**.  
+As many Python developers know, the Global Interpreter Lock (GIL) limits true thread-based parallelism for CPU-bound tasks (at least for now!). As a result, users often turn to **process-based parallelism**.
 When parallelizing workloads over large datasets, it becomes important to efficiently share data across processes. Copying gigabytes of data for each worker would be highly inefficient, both in terms of time and memory.
 
-This is where **memory mapping** becomes incredibly useful:  
+This is where **memory mapping** becomes incredibly useful:
 It allows multiple processes to access the same data **in memory** (read-only in this case) without duplicating it—saving substantial time and system resources.
 
 ---
