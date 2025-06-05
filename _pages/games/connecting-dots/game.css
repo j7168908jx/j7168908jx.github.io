@@ -10,8 +10,10 @@ html, body {
 /* #container {
 } */
 #gameCanvas {
-    display: block;
-    width: 800px;
-    height: 600px;
-    background-color: #fff;
+  position: absolute;         /* Fill parent absolutely */
+  top: 0;
+  left: 0;
+  width: 100vw;               /* Viewport width */
+  height: 100vh;              /* Viewport height */
+  background-color: #fff;
 }

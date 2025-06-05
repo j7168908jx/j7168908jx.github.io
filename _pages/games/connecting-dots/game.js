@@ -23,6 +23,7 @@ const gameState = {
   scores: [],
   gameState: GameStateEnum.WAITING_FOR_OPTIONS,
   scoreboardText: "",
+  isRotated: false,
   gameMode: {
     selectedMode: 0,       // 0 to 3
     points: 15,               // 5 to 50
@@ -542,14 +543,62 @@ function drawDraggingLine(startPoint, currentMousePos) {
 
 function resizeCanvas() {
   const parent = canvas.parentElement;
-  canvas.width = parent.clientWidth;
-  canvas.height = parent.clientHeight;
+  // canvas.width = parent.clientWidth;
+  // canvas.height = parent.clientHeight;
+
+  // set to fullscreen
+
+
+  if (window.innerHeight > window.innerWidth) {
+    // rotate 90
+    canvas.style.transform = 'rotate(90deg)';
+    canvas.style.transformOrigin = 'top left';
+    canvas.style.left = `${window.innerWidth}px`;
+
+    // Adjust size after rotation to avoid clipping
+    canvas.style.width = `${window.innerHeight}px`;
+    canvas.style.height = `${window.innerWidth}px`;
+
+    canvas.width = window.innerHeight;
+    canvas.height = window.innerWidth;
+    gameState.isRotated = true; // Add this line
+  } else {
+    canvas.style.transform = '';
+    canvas.style.transformOrigin = 'top left';
+    canvas.style.left = `0px`;
+
+    // Adjust size after rotation to avoid clipping
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gameState.isRotated = false;
+  }
 
   console.log(`Canvas resized to ${canvas.width}x${canvas.height}`);
 }
 
 
 // ======================= Controller Functions ======================
+
+function getTransformedMouseCoords(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+
+  if (gameState.isRotated) {
+    // When rotated 90 degrees clockwise:
+    const x = clientY - rect.top;
+    const y = canvas.height - (clientX - rect.left);
+    return { x, y };
+  } else {
+    // Normal case
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    return { x, y };
+  }
+}
+
+
 let isSliderMouseDown = false;
 
 function updateSliderValueFromX(x) {
@@ -563,9 +612,13 @@ function updateSliderValueFromX(x) {
 }
 
 function handleMouseDownStarting(e) {
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+  // const rect = canvas.getBoundingClientRect();
+  // const x = e.clientX - rect.left;
+  // const y = e.clientY - rect.top;
+
+  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
+  const x = coords.x;
+  const y = coords.y;
 
   // Check game mode buttons
   for (let i = 0; i < buttonRects.length; i++) {
@@ -602,7 +655,11 @@ function handleMouseMoveStarting(e) {
   if (!isSliderMouseDown) return;
 
   const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
+  // const x = e.clientX - rect.left;
+
+  // With this:
+  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
+  const x = coords.x;
 
   updateSliderValueFromX(x);
 }
@@ -615,8 +672,13 @@ let isGameMouseDown = false;
 
 function handleMouseDownGame(e) {
   const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+  // const x = e.clientX - rect.left;
+  // const y = e.clientY - rect.top;
+
+  // With this:
+  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
+  const x = coords.x;
+  const y = coords.y;
 
   for (let p of gameState.points) {
     if (p.distanceTo(new Point(x, y)) <= 8) {
@@ -632,8 +694,15 @@ function handleMouseMoveGame(e) {
   if (!isGameMouseDown || !startPoint) return;
 
   const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+  // const x = e.clientX - rect.left;
+  // const y = e.clientY - rect.top;
+
+  // With this:
+  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
+  const x = coords.x;
+  const y = coords.y;
+
+  console.log(`Mouse moved to: (${x}, ${y})`);
 
   // Try to snap to a real point
   let snapped = null;
@@ -728,7 +797,10 @@ function detectTriangles(newLine) {
 
   // Check all existing lines to see if they can form a triangle with the new line
   // consider all owner's line can be used, no need to check the owner
-  for (let line of gameState.lines) {
+  // for (let line of gameState.lines) {
+  let exists = false;
+  for (let i = 0; i < gameState.lines.length; i++) {
+    let line = gameState.lines[i];
     if (line !== newLine && (line.start === p1 || line.start === p2 || line.end === p1 || line.end === p2)) {
       // We have a candidate line that shares an endpoint with the new line
       // find the missing line start and end
@@ -737,33 +809,35 @@ function detectTriangles(newLine) {
       let otherPoint2 = (sharedPoint === p1) ? p2 : p1;
 
       // Check if line otherpoint to otherPoint2 already exists
-      let exists = false;
-      for (let existingLine of gameState.lines) {
+      for (let j = i + 1; j < gameState.lines.length; j++) {
+        // for (let existingLine of gameState.lines) {
+        let existingLine = gameState.lines[j];
         if (
           (existingLine.start === otherPoint && existingLine.end === otherPoint2) ||
           (existingLine.start === otherPoint2 && existingLine.end === otherPoint)
         ) {
           exists = true;
-          break;
+          const triangle = new Triangle(sharedPoint, otherPoint, otherPoint2, owner);
+          gameState.triangles.push(triangle);
+          // Update scores
+          gameState.scores[owner] += 1;
+          // do not break since it might form many
         }
-      }
-      if (exists) {
-        // we can form a triangle
-        const triangle = new Triangle(sharedPoint, otherPoint, otherPoint2, owner);
-        gameState.triangles.push(triangle);
-        // Update scores
-        gameState.scores[owner] += 1;
-        return true; // Found a triangle
       }
     }
   }
-  return false; // No triangle found
+  return exists; // No triangle found
 }
 
 function handleMouseDownGameOver(e) {
   const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+  // const x = e.clientX - rect.left;
+  // const y = e.clientY - rect.top;
+
+  // With this:
+  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
+  const x = coords.x;
+  const y = coords.y;
 
   // Check if the click is within the game over button
   const gameOverButton = gameOverButtonRect;
@@ -802,7 +876,7 @@ function checkGameOver() {
 }
 
 function gameLoop() {
-
+  draw();
   requestAnimationFrame(gameLoop);
 }
 
