@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'en-US' }}">
+
+<head>
+  <meta charset="UTF-8">
+
+  <title>{{ page.title | default: site.title | default: site.github.repository_name }} | {{ page.subtitle | default:
+    site.subtitle | default: "Posts" }}</title>
+
+  <!-- The SEO tag works for Search Engine https://github.com/jekyll/jekyll-seo-tag -->
+  {% seo %}
+
+  <!-- also include custom math macros -->
+  <script type="text/javascript" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js">
+    </script>
+  <script type="text/javascript" async
+    src="/assets/js/custom-math.js"></script>
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style"
+    type="text/css" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#157878">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+  {% include head-custom.html %}
+  {% include post-header-custom.html %}
+
+</head>
+
+
+<body>
+  {% include header.html %}
+
+  <main class="main-frame">
+    <div class="sidebar sidebar-primary" role="navigation">
+      {% include sidebar-primary.html %}
+    </div>
+    <div id="content" class="main-content" role="main">
+      {{ content }}
+    </div>
+  </main>
+
+  {% include footer.html %}
+
+</body>
+
+</html>
