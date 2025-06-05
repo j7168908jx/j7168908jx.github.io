@@ -1,7 +1,7 @@
 collections:
   pages:
     output: true
-    permalink: /:title.html
+    permalink: /:path
   posts:
     output: true
     permalink: /posts/:year/:month/:title.html
