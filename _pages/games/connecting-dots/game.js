@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+const snapDistance = 15; // Distance to snap to a point
+
 const GameStateEnum = Object.freeze({
   WAITING_FOR_OPTIONS: 0,
   GAME_STARTED: 1,
@@ -42,7 +44,7 @@ class BackgroundColor {
       case 0: return 'rgba(255, 30, 0, 0.1)'; // Red
       case 1: return 'rgba(59, 144, 255, 0.1)'; // Blue
       case 2: return 'rgba(0, 228, 68, 0.1)'; // Green
-      case 3: return 'rgba(255, 239, 14, 0.1)'; // Yellow
+      case 3: return 'rgba(235, 208, 0, 0.1)'; // Yellow
       default: return 'rgba(128, 128, 128, 0.1)'; // Default gray
     }
   }
@@ -123,7 +125,7 @@ class Line {
       case 0: return "rgba(255, 30, 0, 0.8)"; // Red
       case 1: return "rgba(59, 144, 255, 0.8)"; // Blue
       case 2: return "rgba(0, 228, 68, 0.8)"; // Green
-      case 3: return "rgba(255, 239, 14, 0.8)"; // Yellow
+      case 3: return "rgba(235, 208, 0, 0.8)"; // Yellow
       default: return 'black'; // Default color if no owner
     }
   }
@@ -195,6 +197,22 @@ class Triangle {
     }
   }
 
+  intersects(other) {
+    // Check if this triangle intersects with another triangle
+    return doTrianglesOverlap(this, other, true);
+  }
+
+  isValid(allTriangles) {
+    // Check if the triangle overlaps with any existing triangles
+    for (let triangle of allTriangles) {
+      if (this.intersects(triangle)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
   draw(ctx) {
     ctx.beginPath();
     ctx.moveTo(this.points[0].x, this.points[0].y);
@@ -207,14 +225,39 @@ class Triangle {
 }
 
 
+function pointToSegmentDistance(newPoint, lineEnd1, lineEnd2) {
+  const px = newPoint.x;
+  const py = newPoint.y;
+  const x1 = lineEnd1.x;
+  const y1 = lineEnd1.y;
+  const x2 = lineEnd2.x;
+  const y2 = lineEnd2.y;
 
-function isLineValid() {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
 
+  if (dx === 0 && dy === 0) {
+    // The segment is a point
+    const distSq = (px - x1) ** 2 + (py - y1) ** 2;
+    return Math.sqrt(distSq);
+  }
+
+  const t = ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy);
+  const tClamped = Math.max(0, Math.min(1, t)); // Clamp t to [0, 1]
+
+  const projX = x1 + tClamped * dx;
+  const projY = y1 + tClamped * dy;
+
+  const distSq = (px - projX) ** 2 + (py - projY) ** 2;
+  return Math.sqrt(distSq);
 }
 
 function generatePoints(count, width, height) {
   const points = [];
-  const minDist = 15; // Minimum distance between points
+  const minDistPts = 30; // Minimum distance between points
+
+  // note: this cannot solve all too close cases, but no good idea for now
+  const minDistLines = 30; // Minimum distance between pts and any lines
   let generated = 0;
 
   while (generated < count) {
@@ -225,9 +268,18 @@ function generatePoints(count, width, height) {
     // Check if too close to any existing point
     let tooClose = false;
     for (let p of points) {
-      if (newPoint.distanceTo(p) < minDist) {
+      if (newPoint.distanceTo(p) < minDistPts) {
         tooClose = true;
         break;
+      }
+    }
+
+    for (let i = 0; (i < points.length) && !tooClose; i++) {
+      for (let j = i + 1; j < points.length; j++) {
+        if (pointToSegmentDistance(newPoint, points[i], points[j]) < minDistLines) {
+          tooClose = true;
+          break;
+        }
       }
     }
     if (!tooClose) {
@@ -251,16 +303,17 @@ function initGameData() {
   // get game area and score area
   const numPlayers = gameState.numPlayers;
   const scoreHeight = 30;   // scoreboard height
-  const width = canvas.width - 20;
-  const height = canvas.height - scoreHeight - 20; // 10px for margin
+  const margin = 20;
+  const width = canvas.width - 2 * margin;
+  const height = canvas.height - scoreHeight - 2 * margin;
 
   // generate uniform randomly distributed points over the canvas
   const numPoints = uiState.points;
   gameState.points = generatePoints(numPoints, width, height);
   // shift pts down
   gameState.points.forEach(point => {
-    point.x += 10; // add left margin
-    point.y += scoreHeight + 10; // add top margin
+    point.x += margin; // add left margin
+    point.y += scoreHeight + margin; // add top margin
   });
 
 
@@ -282,22 +335,55 @@ function initGameData() {
 
 // ====================== Drawing Functions ======================
 const buttonRects = [];
-const buttonLabels = ['Play vs Bot', '2 Players', '3 Players', '4 Players'];
+const buttonLabelLonger = ['Play vs Bot', '2 Players', '3 Players', '4 Players'];
+const buttonLabelShorter = ['Bot', '2P', '3P', '4P'];
 const sliderRect = {};
 const startButtonRect = {};
 const gameOverButtonRect = {};
+const backButtonRect = {};
 
+function drawBackButton() {
+  const buttonWidth = Math.max(Math.min(30, canvas.width * 0.1), 40);
+  const buttonHeight = 17;
+  const x = 20; // Top left corner with some padding
+  const y = 6;
+  const borderRadius = Math.min(20, buttonHeight * 0.3);
+
+  // Save for interactivity
+  Object.assign(backButtonRect, { x, y, width: buttonWidth, height: buttonHeight });
+
+  ctx.fillStyle = '#fff';
+  drawRoundedRect(x, y, buttonWidth, buttonHeight, borderRadius);
+
+  ctx.fillStyle = '#333';
+  ctx.font = `bold ${Math.max(16, buttonHeight * 0.4)}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('<', x + buttonWidth / 2, y + buttonHeight / 2);
+}
 
 function drawModeButtons() {
   buttonRects.length = 0;
 
   const minDim = Math.min(canvas.width, canvas.height);
-  const buttonWidth = Math.max(120, minDim * 0.18);
+  const buttonWidth = Math.max(50, minDim * 0.4);
   const buttonHeight = Math.max(50, minDim * 0.1);
   const spacingX = buttonWidth * 0.15;
-  const totalWidth = buttonLabels.length * buttonWidth + (buttonLabels.length - 1) * spacingX;
+  const spacingY = buttonHeight * 0.2;
+
+  const buttonLabels = canvas.width < 300 ? buttonLabelShorter : buttonLabelLonger;
+  // Calculate grid dimensions
+  const cols = 2;
+  const rows = Math.ceil(buttonLabels.length / cols);
+
+  // Calculate total grid size
+  const totalWidth = cols * buttonWidth + (cols - 1) * spacingX;
+  const totalHeight = rows * buttonHeight + (rows - 1) * spacingY;
+
+  // Center the grid
   const startX = (canvas.width - totalWidth) / 2;
-  const topY = canvas.height * 0.25;
+  const startY = canvas.height * 0.25;
+
   const borderRadius = Math.min(20, buttonHeight * 0.3);
 
   ctx.font = `bold ${Math.max(16, buttonHeight * 0.3)}px sans-serif`;
@@ -305,8 +391,11 @@ function drawModeButtons() {
   ctx.textBaseline = 'middle';
 
   buttonLabels.forEach((label, i) => {
-    const x = startX + i * (buttonWidth + spacingX);
-    const y = topY;
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+
+    const x = startX + col * (buttonWidth + spacingX);
+    const y = startY + row * (buttonHeight + spacingY);
 
     // Save for interactivity
     buttonRects.push({ x, y, width: buttonWidth, height: buttonHeight });
@@ -320,7 +409,7 @@ function drawModeButtons() {
 
 function drawSlider() {
   const minDim = Math.min(canvas.width, canvas.height);
-  const sliderY = canvas.height * 0.25 + Math.max(50, minDim * 0.1) + 60;
+  const sliderY = canvas.height * 0.5 + Math.max(50, minDim * 0.1) + 60;
   const sliderWidth = canvas.width * 0.6;
   const sliderHeight = 8;
   const sliderX = (canvas.width - sliderWidth) / 2;
@@ -352,7 +441,7 @@ function drawSlider() {
 }
 
 function drawStartButton() {
-  const btnWidth = Math.max(140, canvas.width * 0.25);
+  const btnWidth = Math.max(70, canvas.width * 0.4);
   const btnHeight = Math.max(50, canvas.height * 0.07);
   const x = (canvas.width - btnWidth) / 2;
   const y = canvas.height - btnHeight - 40;
@@ -387,7 +476,7 @@ function drawRoundedRect(x, y, width, height, r) {
 }
 
 function drawStartOption() {
-  ctx.fillStyle = 'rgba(77, 77, 77, 0.6)';
+  ctx.fillStyle = 'rgba(177, 77, 77, 0.6)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   drawModeButtons();
@@ -427,13 +516,13 @@ function drawGameOverOverlay() {
   ctx.fillText('Restart', canvas.width / 2, y + btnHeight / 2);
 }
 
+function drawDetail() {
 
-
-function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   if (gameState.gameState === GameStateEnum.WAITING_FOR_OPTIONS) {
     drawStartOption();
+    drawBackButton();
     return;
   }
 
@@ -456,11 +545,55 @@ function draw() {
   // Scores Text
   drawScoreboardText();
 
-  if (gameState.gameState === GameStateEnum.GAME_ENDED) {
-    drawGameOverOverlay();
-    return;
+  // draw back button
+  drawBackButton();
+
+
+  // draw dragging line if in dragging state
+  if (startPoint && currentMousePos && isGameMouseDown) {
+    drawDraggingLine(startPoint, currentMousePos);
   }
 
+
+
+  if (gameState.gameState === GameStateEnum.GAME_ENDED) {
+    drawGameOverOverlay();
+  }
+}
+
+
+function resizeCanvas() {
+  // const parent = canvas.parentElement;
+  // canvas.width = parent.clientWidth;
+  // canvas.height = parent.clientHeight;
+
+  // set to fullscreen
+  const isPortrait = window.innerHeight > window.innerWidth;
+
+  gameState.isRotated = isPortrait;
+
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  canvas.style.width = `${canvas.width}px`;
+  canvas.style.height = `${canvas.height}px`;
+
+
+  console.log(`Canvas resized to ${canvas.width}x${canvas.height}, rotated: ${gameState.isRotated}`);
+  draw();
+}
+
+function draw() {
+  // ctx.save();
+
+  // if (gameState.isRotated) {
+  //   // Rotate the canvas coordinate system 90° clockwise
+  //   // ctx.translate(canvas.height, 0);
+  //   // ctx.rotate(Math.PI / 2);
+  // }
+  drawDetail();
+  // ctx.restore();
 }
 
 function drawScoreboardText() {
@@ -541,43 +674,6 @@ function drawDraggingLine(startPoint, currentMousePos) {
 }
 
 
-function resizeCanvas() {
-  const parent = canvas.parentElement;
-  // canvas.width = parent.clientWidth;
-  // canvas.height = parent.clientHeight;
-
-  // set to fullscreen
-
-
-  if (window.innerHeight > window.innerWidth) {
-    // rotate 90
-    canvas.style.transform = 'rotate(90deg)';
-    canvas.style.transformOrigin = 'top left';
-    canvas.style.left = `${window.innerWidth}px`;
-
-    // Adjust size after rotation to avoid clipping
-    canvas.style.width = `${window.innerHeight}px`;
-    canvas.style.height = `${window.innerWidth}px`;
-
-    canvas.width = window.innerHeight;
-    canvas.height = window.innerWidth;
-    gameState.isRotated = true; // Add this line
-  } else {
-    canvas.style.transform = '';
-    canvas.style.transformOrigin = 'top left';
-    canvas.style.left = `0px`;
-
-    // Adjust size after rotation to avoid clipping
-    canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${window.innerHeight}px`;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    gameState.isRotated = false;
-  }
-
-  console.log(`Canvas resized to ${canvas.width}x${canvas.height}`);
-}
 
 
 // ======================= Controller Functions ======================
@@ -585,17 +681,22 @@ function resizeCanvas() {
 function getTransformedMouseCoords(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
 
-  if (gameState.isRotated) {
-    // When rotated 90 degrees clockwise:
-    const x = clientY - rect.top;
-    const y = canvas.height - (clientX - rect.left);
-    return { x, y };
-  } else {
-    // Normal case
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-    return { x, y };
-  }
+  // if (gameState.isRotated) {
+  //   // When rotated 90 degrees clockwise:
+  //   const x = clientY - rect.top;
+  //   const y = canvas.height - (clientX - rect.left);
+  //   return { x, y };
+  // } else {
+  //   // Normal case
+  //   const x = clientX - rect.left;
+  //   const y = clientY - rect.top;
+  //   return { x, y };
+  // }
+
+  const x = clientX - rect.left;
+  const y = clientY - rect.top;
+
+  return { x, y }
 }
 
 
@@ -609,6 +710,29 @@ function updateSliderValueFromX(x) {
     uiState.points = newValue;
     draw();
   }
+}
+
+function hideGameWindow() {
+  // hide canvas
+  canvas.style.display = 'none';
+  // allow scroll
+  document.body.style.overflow = 'auto';
+}
+
+function handleMouseDownBack(e) {
+  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
+  const x = coords.x;
+  const y = coords.y;
+
+  // Check Start button
+  const start = backButtonRect;
+  if (
+    x >= start.x && x <= start.x + start.width &&
+    y >= start.y && y <= start.y + start.height
+  ) {
+    hideGameWindow();
+  }
+
 }
 
 function handleMouseDownStarting(e) {
@@ -681,7 +805,7 @@ function handleMouseDownGame(e) {
   const y = coords.y;
 
   for (let p of gameState.points) {
-    if (p.distanceTo(new Point(x, y)) <= 8) {
+    if (p.distanceTo(new Point(x, y)) <= snapDistance) {
       startPoint = p;
       currentMousePos = p;
       isGameMouseDown = true;
@@ -702,12 +826,12 @@ function handleMouseMoveGame(e) {
   const x = coords.x;
   const y = coords.y;
 
-  console.log(`Mouse moved to: (${x}, ${y})`);
+  // console.log(`Mouse moved to: (${x}, ${y})`);
 
   // Try to snap to a real point
   let snapped = null;
   for (let p of gameState.points) {
-    if (p !== startPoint && p.distanceTo(new Point(x, y)) <= 8) {
+    if (p !== startPoint && p.distanceTo(new Point(x, y)) <= snapDistance) {
       snapped = p;
       break;
     }
@@ -725,7 +849,6 @@ function handleMouseMoveGame(e) {
   isValidMove = newLine.isValid(gameState.lines);
 
   draw();
-  drawDraggingLine(startPoint, currentMousePos);
 
 }
 
@@ -818,7 +941,12 @@ function detectTriangles(newLine) {
         ) {
           exists = true;
           const triangle = new Triangle(sharedPoint, otherPoint, otherPoint2, owner);
-          gameState.triangles.push(triangle);
+
+          // check if triangle is valid (not overlay with other triangles)
+          if (triangle.isValid(gameState.triangles)) {
+            gameState.triangles.push(triangle);
+
+          }
           // Update scores
           gameState.scores[owner] += 1;
           // do not break since it might form many
@@ -853,6 +981,7 @@ function handleMouseDownGameOver(e) {
 }
 
 function handleMouseDown(e) {
+  handleMouseDownBack(e);
   if (gameState.gameState === GameStateEnum.WAITING_FOR_OPTIONS) {
     handleMouseDownStarting(e);
   } else if (gameState.gameState === GameStateEnum.GAME_STARTED) {
@@ -876,7 +1005,7 @@ function checkGameOver() {
 }
 
 function gameLoop() {
-  draw();
+  // draw();
   requestAnimationFrame(gameLoop);
 }
 
@@ -915,13 +1044,46 @@ canvas.addEventListener('touchstart', handleTouchStart);
 canvas.addEventListener('touchmove', handleTouchMove);
 window.addEventListener('touchend', handleTouchEnd);
 
+function setupStartButton() {
+  const startButton = document.getElementById('start-game');
+
+
+  // click to show the canvas
+  startButton.addEventListener('click', () => {
+    // change the text
+    startButton.textContent = 'Click to show the game';
+    // hide the start button
+    canvas.style.display = 'block';
+
+    // set the html body to ignore overflow
+    document.body.style.overflow = 'hidden';
+
+    // allow showing the reset button
+    const resetButton = document.getElementById('reset-game');
+    resetButton.style.display = 'block';
+  });
+
+
+}
+
+function setupResetButton() {
+  const resetButton = document.getElementById('reset-game');
+
+  // click to reset the game
+  resetButton.addEventListener('click', () => {
+    // reset the game state
+    gameState.gameState = GameStateEnum.WAITING_FOR_OPTIONS;
+    initGameData();
+    draw();
+  });
+}
 
 function main() {
+  setupStartButton();
+  setupResetButton();
   resizeCanvas();
   // Add listener for resize
   window.addEventListener('resize', resizeCanvas);
-  initGameData();
-  draw();
   gameLoop();
 }
 
