@@ -888,10 +888,33 @@ function startGame() {
 
 }
 
+function handleTouchStart(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const mouseEvent = { clientX: touch.clientX, clientY: touch.clientY };
+  handleMouseDown(mouseEvent);
+}
+
+function handleTouchMove(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const mouseEvent = { clientX: touch.clientX, clientY: touch.clientY };
+  handleMouseMove(mouseEvent);
+}
+
+function handleTouchEnd(e) {
+  e.preventDefault();
+  handleMouseUp(e);
+}
+
 // Global listener to stop dragging on mouse up
 window.addEventListener('mouseup', handleMouseUp);
 canvas.addEventListener('mousedown', handleMouseDown);
 canvas.addEventListener('mousemove', handleMouseMove);
+canvas.addEventListener('touchstart', handleTouchStart);
+canvas.addEventListener('touchmove', handleTouchMove);
+window.addEventListener('touchend', handleTouchEnd);
+
 
 function main() {
   resizeCanvas();
