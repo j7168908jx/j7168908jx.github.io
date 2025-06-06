@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
+function mylog(message) {
+  if (typeof console !== 'undefined' && console.log) {
+    // console.log(message);
+  }
+}
+
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -88,12 +94,12 @@ class Point {
         // Check if a line between this point and the other point intersects with any existing lines
         const newLine = new Line(this, other, -1); // -1 indicates no owner
         if (newLine.isValid(allLines)) {
-          console.log(`Point (${this.x}, ${this.y}) can connect to (${other.x}, ${other.y})`);
+          mylog(`Point (${this.x}, ${this.y}) can connect to (${other.x}, ${other.y})`);
           return true; // This point can connect to another point
         }
       }
     }
-    console.log(`Point (${this.x}, ${this.y}) cannot connect to any other point`);
+    mylog(`Point (${this.x}, ${this.y}) cannot connect to any other point`);
     this.possible = false; // No valid connections found
     return false;
   }
@@ -580,7 +586,7 @@ function resizeCanvas() {
   canvas.style.height = `${canvas.height}px`;
 
 
-  console.log(`Canvas resized to ${canvas.width}x${canvas.height}, rotated: ${gameState.isRotated}`);
+  mylog(`Canvas resized to ${canvas.width}x${canvas.height}, rotated: ${gameState.isRotated}`);
   draw();
 }
 
@@ -826,7 +832,7 @@ function handleMouseMoveGame(e) {
   const x = coords.x;
   const y = coords.y;
 
-  // console.log(`Mouse moved to: (${x}, ${y})`);
+  // mylog(`Mouse moved to: (${x}, ${y})`);
 
   // Try to snap to a real point
   let snapped = null;
@@ -854,6 +860,9 @@ function handleMouseMoveGame(e) {
 
 
 function handleMouseUp(e) {
+  if (!isCanvasVisible()) {
+    return; // Ignore events if canvas is not visible
+  }
   if (gameState.gameState === GameStateEnum.WAITING_FOR_OPTIONS) {
     handleMouseUpStarting(e);
   } else if (gameState.gameState === GameStateEnum.GAME_STARTED) {
@@ -890,7 +899,7 @@ function handleMouseUpGame(e) {
 
     // check if valid triangle can be formed
     let found = detectTriangles(newLine);
-    console.log(`Triangle found: ${found}`);
+    mylog(`Triangle found: ${found}`);
 
     // Advance to the next player (optional logic)
     if (!found) {
@@ -981,6 +990,9 @@ function handleMouseDownGameOver(e) {
 }
 
 function handleMouseDown(e) {
+  if (!isCanvasVisible()) {
+    return; // Ignore events if canvas is not visible
+  }
   handleMouseDownBack(e);
   if (gameState.gameState === GameStateEnum.WAITING_FOR_OPTIONS) {
     handleMouseDownStarting(e);
@@ -992,6 +1004,9 @@ function handleMouseDown(e) {
 }
 
 function handleMouseMove(e) {
+  if (!isCanvasVisible()) {
+    return; // Ignore events if canvas is not visible
+  }
   if (gameState.gameState === GameStateEnum.WAITING_FOR_OPTIONS) {
     handleMouseMoveStarting(e);
   } else if (gameState.gameState === GameStateEnum.GAME_STARTED) {
@@ -1017,7 +1032,15 @@ function startGame() {
 
 }
 
+function isCanvasVisible() {
+  // check if canvas is visible
+  return canvas.style.display !== 'none';
+}
+
 function handleTouchStart(e) {
+  if (!isCanvasVisible()) {
+    return; // Ignore touch events if canvas is not visible
+  }
   e.preventDefault();
   const touch = e.touches[0];
   const mouseEvent = { clientX: touch.clientX, clientY: touch.clientY };
@@ -1025,6 +1048,9 @@ function handleTouchStart(e) {
 }
 
 function handleTouchMove(e) {
+  if (!isCanvasVisible()) {
+    return; // Ignore touch events if canvas is not visible
+  }
   e.preventDefault();
   const touch = e.touches[0];
   const mouseEvent = { clientX: touch.clientX, clientY: touch.clientY };
@@ -1032,6 +1058,9 @@ function handleTouchMove(e) {
 }
 
 function handleTouchEnd(e) {
+  if (!isCanvasVisible()) {
+    return; // Ignore touch events if canvas is not visible
+  }
   e.preventDefault();
   handleMouseUp(e);
 }
@@ -1047,6 +1076,11 @@ window.addEventListener('touchend', handleTouchEnd);
 function setupStartButton() {
   const startButton = document.getElementById('start-game');
 
+  // handle touch as well
+  startButton.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // Prevent default touch behavior
+    startButton.click(); // Trigger the click event
+  });
 
   // click to show the canvas
   startButton.addEventListener('click', () => {
@@ -1068,6 +1102,12 @@ function setupStartButton() {
 
 function setupResetButton() {
   const resetButton = document.getElementById('reset-game');
+
+  // handle touch as well
+  resetButton.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // Prevent default touch behavior
+    resetButton.click(); // Trigger the click event
+  });
 
   // click to reset the game
   resetButton.addEventListener('click', () => {
