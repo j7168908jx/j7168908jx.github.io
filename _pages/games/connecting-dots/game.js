@@ -954,10 +954,9 @@ function detectTriangles(newLine) {
           // check if triangle is valid (not overlay with other triangles)
           if (triangle.isValid(gameState.triangles)) {
             gameState.triangles.push(triangle);
-
+            // Update scores
+            gameState.scores[owner] += 1;
           }
-          // Update scores
-          gameState.scores[owner] += 1;
           // do not break since it might form many
         }
       }
