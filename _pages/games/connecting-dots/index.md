@@ -20,7 +20,8 @@ Rules: connect the dots to form more triangles to win!
 
 - Each player take turns to draw a line between two dots.
 - When a player completes a triangle, it can continue to draw one more line until no more triangles are formed. One point is awarded for each triangle formed.
-- The game ends when all lines are drawn. The player with the most points wins.
+- The game ends when no valid moves (that can earn a point) are left.
+- The player with the most points wins.
 
 Line rules:
 
@@ -32,6 +33,8 @@ Triangle rules:
 - A triangle is formed when three lines connect three dots.
 - Valid triangle cannot contain any other existing triangle inside it.
 
+
+Dots will be marked gray if no valid moves can be made from them.
 
 <button id="start-game"> Click to start the game </button>
 <button id="reset-game" style="display: none"> Click to reset the game status </button>

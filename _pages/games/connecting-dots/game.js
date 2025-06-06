@@ -10,28 +10,36 @@ function mylog(message) {
   }
 }
 
+function myerror(message) {
+  if (typeof console !== 'undefined' && console.error) {
+    console.error(message);
+  }
+}
+
 const COLORS = {
   PLAYERS: [
-    'rgba(255, 30, 0, 0.8)',    // Red
-    'rgba(59, 144, 255, 0.8)',  // Blue
-    'rgba(0, 228, 68, 0.8)',    // Green
-    'rgba(235, 208, 0, 0.8)'    // Yellow
+    'rgba(255, 30, 0, 0.8)',
+    'rgba(59, 144, 255, 0.8)',
+    'rgba(0, 228, 68, 0.8)',
+    'rgba(235, 208, 0, 0.8)'
   ],
   BACKGROUNDS: [
-    'rgba(255, 30, 0, 0.1)',    // Red
-    'rgba(59, 144, 255, 0.1)',  // Blue
-    'rgba(0, 228, 68, 0.1)',    // Green
-    'rgba(235, 208, 0, 0.1)'    // Yellow
+    'rgba(255, 30, 0, 0.1)',
+    'rgba(59, 144, 255, 0.1)',
+    'rgba(0, 228, 68, 0.1)',
+    'rgba(235, 208, 0, 0.1)'
   ],
   TRIANGLES: [
-    'rgba(255, 30, 0, 0.2)',    // Red
-    'rgba(59, 144, 255, 0.2)',  // Blue
-    'rgba(0, 228, 68, 0.2)',    // Green
-    'rgba(255, 239, 14, 0.2)'   // Yellow
+    'rgba(255, 30, 0, 0.2)',
+    'rgba(59, 144, 255, 0.2)',
+    'rgba(0, 228, 68, 0.2)',
+    'rgba(255, 239, 14, 0.2)'
   ],
   DEFAULT: 'black',
   DISABLED: 'rgb(211, 211, 211)',
-  GRAY: 'rgba(128, 128, 128, 0.1)'
+  GRAY: 'rgba(128, 128, 128, 0.1)',
+  STARTUP_BACKGROUND: 'rgba(177, 77, 77, 0.6)',
+  SHADOW: 'rgba(0, 0, 0, 0.5)',
 };
 
 class Color {
@@ -60,6 +68,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const SNAP_DISTANCE = 15; // Distance to snap to a point
+const PTS_MIN = 5;  // Minimum number of points in the game
+const PTS_MAX = 50;
 
 const DIMS = {
   SCORE_HEIGHT: 30,
@@ -82,15 +92,18 @@ const buttonLabelShorter = ['Bot', '2P', '3P', '4P'];
 // ====================== GLOBAL STATE ======================
 
 const gameState = {
+  /** @type {Point[]} */
   points: [],
+  /** @type {Line[]} */
   lines: [],
+  /** @type {Triangle[]} */
   triangles: [],
   currPlayer: 0,
   numPlayers: 0,
+  /** @type {number[]} */
   scores: [],
   gameState: GAME_STATE.WAITING_FOR_OPTIONS,
   scoreboardText: "",
-  isRotated: false,
   gameMode: {
     selectedMode: 1,          // 0 to 3
     points: 15,               // 5 to 50
@@ -98,13 +111,49 @@ const gameState = {
 };
 
 const ui = {
+  /** @type {ButtonArea[]} */
   buttonRects: [],
-  sliderRect: {},
-  startButtonRect: {},
-  gameOverButtonRect: {},
-  backButtonRect: {},
+  sliderRect: null,
+  startButtonRect: null,
+  gameOverButtonRect: null,
+  backButtonRect: null,
 };
 
+
+class ButtonArea {
+  // canvas coordinates
+  constructor(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
+  contains(x, y) {
+    return (
+      x >= this.x && x <= this.x + this.width &&
+      y >= this.y && y <= this.y + this.height
+    );
+  }
+
+  draw(ctx, borderRoundRadius = 10, fillStyle = "#fff") {
+    const { x, y, width, height } = this;
+    const r = borderRoundRadius;
+    ctx.fillStyle = fillStyle;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + width - r, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+    ctx.lineTo(x + width, y + height - r);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+    ctx.lineTo(x + r, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    ctx.fill();
+  }
+}
 
 // ====================== Game Logic Classes ======================
 
@@ -112,25 +161,50 @@ class Point extends PointBase {
   constructor(x, y) {
     super(x, y);
     this.possible = true; // Indicates if the point can connect to other points
+    this.safe = false; // Indicates if the point is inside a triangle
+    this.possibleWithoutSafe = true; // Indicates if the point can connect to other points that are not inside any triangle
+  }
+
+  updateSafe(allTriangles) {
+    if (!this.safe) {
+      this.safe = allTriangles.some(triangle => triangle.strictlyContains(this));
+      mylog(`Point (${this.x}, ${this.y}) is now safe? ${this.safe}`);
+    }
   }
 
   updatePossible(allPoints, allLines) {
-    if (!this.possible) return false;
+    if (!this.possible) return;  // impossible point can be ignored
+
     // Check if this point can connect to any other point
     // i.e., a new line can be formed with this point, without crossing any existing lines
+    let stillPossible = false;
+    let stillPossibleWithoutSafe = false;
+
     for (let other of allPoints) {
-      if (other !== this) {
-        // Check if a line between this point and the other point intersects with any existing lines
-        const newLine = new Line(this, other, -1); // -1 indicates no owner
-        if (newLine.isValid(allLines)) {
-          mylog(`Point (${this.x}, ${this.y}) can connect to (${other.x}, ${other.y})`);
-          return true; // This point can connect to another point
-        }
+      if (other.equals(this)) continue;
+
+      const newLine = new Line(this, other, -1);
+      const valid = newLine.isValid(allLines);
+
+      if (!valid) continue;
+
+      if (!stillPossible) {
+        mylog(`Point (${this.x}, ${this.y}) can connect to (${other.x}, ${other.y}), still possible`);
+        stillPossible = true;
+      }
+
+      if (!other.safe) {
+        stillPossibleWithoutSafe = true;
+        break; // Stronger condition met; no need to continue
       }
     }
-    mylog(`Point (${this.x}, ${this.y}) cannot connect to any other point`);
-    this.possible = false; // No valid connections found
-    return false;
+
+    if (!stillPossible) {
+      mylog(`Point (${this.x}, ${this.y}) cannot connect to any other point`);
+    }
+
+    this.possible = stillPossible;
+    this.possibleWithoutSafe = stillPossibleWithoutSafe;
   }
 
   draw(ctx) {
@@ -188,33 +262,6 @@ class Triangle extends TriangleBase {
 // ====================== Game Logic Functions  ======================
 
 
-function pointToSegmentDistance(newPoint, lineEnd1, lineEnd2) {
-  const px = newPoint.x;
-  const py = newPoint.y;
-  const x1 = lineEnd1.x;
-  const y1 = lineEnd1.y;
-  const x2 = lineEnd2.x;
-  const y2 = lineEnd2.y;
-
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-
-  if (dx === 0 && dy === 0) {
-    // The segment is a point
-    const distSq = (px - x1) ** 2 + (py - y1) ** 2;
-    return Math.sqrt(distSq);
-  }
-
-  const t = ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy);
-  const tClamped = Math.max(0, Math.min(1, t)); // Clamp t to [0, 1]
-
-  const projX = x1 + tClamped * dx;
-  const projY = y1 + tClamped * dy;
-
-  const distSq = (px - projX) ** 2 + (py - projY) ** 2;
-  return Math.sqrt(distSq);
-}
-
 function generatePoints(count, width, height) {
   const points = [];
   const MIN_DISTANCE_BETWEEN_POINTS = 30; // Minimum distance between points
@@ -239,7 +286,7 @@ function generatePoints(count, width, height) {
 
     for (let i = 0; (i < points.length) && !tooClose; i++) {
       for (let j = i + 1; j < points.length; j++) {
-        if (pointToSegmentDistance(newPoint, points[i], points[j]) < MIN_DIST_FROM_LINES) {
+        if (newPoint.distanceToLineSegment(points[i], points[j]) < MIN_DIST_FROM_LINES) {
           tooClose = true;
           break;
         }
@@ -303,13 +350,12 @@ function drawBackButton() {
   const borderRadius = Math.min(20, buttonHeight * 0.3);
 
   // Save for interactivity
-  Object.assign(ui.backButtonRect, { x, y, width: buttonWidth, height: buttonHeight });
-
-  ctx.fillStyle = '#fff';
-  drawRoundedRect(x, y, buttonWidth, buttonHeight, borderRadius);
+  // Object.assign(ui.backButtonRect, { x, y, width: buttonWidth, height: buttonHeight });
+  ui.backButtonRect = new ButtonArea(x, y, buttonWidth, buttonHeight);
+  ui.backButtonRect.draw(ctx, borderRadius, "#fff");
 
   ctx.fillStyle = '#333';
-  ctx.font = `bold ${Math.max(16, buttonHeight * 0.4)}px sans-serif`;
+  ctx.font = getFontString(Math.max(16, buttonHeight * 0.4));
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('<', x + buttonWidth / 2, y + buttonHeight / 2);
@@ -339,7 +385,7 @@ function drawModeButtons() {
 
   const borderRadius = Math.min(20, buttonHeight * 0.3);
 
-  ctx.font = `bold ${Math.max(16, buttonHeight * 0.3)}px sans-serif`;
+  ctx.font = getFontString(Math.max(16, buttonHeight * 0.3));
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
@@ -351,10 +397,13 @@ function drawModeButtons() {
     const y = startY + row * (buttonHeight + spacingY);
 
     // Save for interactivity
-    ui.buttonRects.push({ x, y, width: buttonWidth, height: buttonHeight });
+    const btn = new ButtonArea(x, y, buttonWidth, buttonHeight);
+    ui.buttonRects.push(btn);
 
-    ctx.fillStyle = (gameState.gameMode.selectedMode === i) ? '#ffe066' : '#fff';
-    drawRoundedRect(x, y, buttonWidth, buttonHeight, borderRadius);
+    const currentSelected = gameState.gameMode.selectedMode;
+    const fillStyle = (currentSelected === i) ? '#ffe066' : '#fff';
+    btn.draw(ctx, borderRadius, fillStyle);
+
     ctx.fillStyle = '#333';
     ctx.fillText(label, x + buttonWidth / 2, y + buttonHeight / 2);
   });
@@ -367,13 +416,11 @@ function drawSlider() {
   const sliderHeight = 8;
   const sliderX = (canvas.width - sliderWidth) / 2;
 
-  // Save rect
-  Object.assign(ui.sliderRect, { x: sliderX, y: sliderY, width: sliderWidth, height: sliderHeight });
+  // enlarge the reacting area of slider 10px on each side
+  ui.sliderRect = new ButtonArea(sliderX, sliderY - 10, sliderWidth, sliderHeight + 20);
 
-  const sliderMin = 5;
-  const sliderMax = 50;
-  const value = gameState.gameMode.points;
-  const thumbX = sliderX + ((value - sliderMin) / (sliderMax - sliderMin)) * sliderWidth;
+  const npoints = gameState.gameMode.points;
+  const thumbX = sliderX + ((npoints - PTS_MIN) / (PTS_MAX - PTS_MIN)) * sliderWidth;
 
   // Draw track
   ctx.fillStyle = '#ccc';
@@ -387,10 +434,10 @@ function drawSlider() {
 
   // Label
   ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.max(14, sliderHeight * 2)}px sans-serif`;
+  ctx.font = getFontString(Math.max(14, sliderHeight * 2));
   ctx.textAlign = 'center';
   ctx.textBaseline = 'bottom';
-  ctx.fillText(`Points: ${value}`, canvas.width / 2, sliderY - 10);
+  ctx.fillText(`Points: ${npoints}`, canvas.width / 2, sliderY - 10);
 }
 
 function drawStartButton() {
@@ -401,35 +448,18 @@ function drawStartButton() {
   const borderRadius = Math.min(20, btnHeight * 0.3);
 
   // Save for click detection
-  Object.assign(ui.startButtonRect, { x, y, width: btnWidth, height: btnHeight });
-
-  ctx.fillStyle = '#fff';
-  drawRoundedRect(x, y, btnWidth, btnHeight, borderRadius);
+  ui.startButtonRect = new ButtonArea(x, y, btnWidth, btnHeight);
+  ui.startButtonRect.draw(ctx, borderRadius, "#fff");
 
   ctx.fillStyle = '#333';
-  ctx.font = `bold ${Math.max(16, btnHeight * 0.4)}px sans-serif`;
+  ctx.font = getFontString(Math.max(16, btnHeight * 0.4));
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('Start', canvas.width / 2, y + btnHeight / 2);
 }
 
-function drawRoundedRect(x, y, width, height, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + width - r, y);
-  ctx.quadraticCurveTo(x + width, y, x + width, y + r);
-  ctx.lineTo(x + width, y + height - r);
-  ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
-  ctx.lineTo(x + r, y + height);
-  ctx.quadraticCurveTo(x, y + height, x, y + height - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-  ctx.fill();
-}
-
 function drawStartOption() {
-  ctx.fillStyle = 'rgba(177, 77, 77, 0.6)';
+  ctx.fillStyle = COLORS.STARTUP_BACKGROUND;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   drawModeButtons();
@@ -439,15 +469,19 @@ function drawStartOption() {
 
 function drawGameOverOverlay() {
   // Shade the whole canvas
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+  ctx.fillStyle = COLORS.SHADOW;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // 2. "Game Over" text
   ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.max(28, canvas.height * 0.05)}px sans-serif`;
+  ctx.font = getFontString(Math.max(28, canvas.height * 0.05));
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText('Game Over', canvas.width / 2, canvas.height * 0.3);
+
+  // player who wins
+  // const winner = gameState.scores.indexOf(Math.max(...gameState.scores));
+  // ctx.fillText(`Player ${winner + 1} wins!`, canvas.width / 2, canvas.height * 0.4);
 
   // 3. Restart button
   const btnWidth = Math.max(160, canvas.width * 0.25);
@@ -457,21 +491,31 @@ function drawGameOverOverlay() {
   const borderRadius = Math.min(20, btnHeight * 0.3);
 
   // Save for click detection
-  Object.assign(ui.gameOverButtonRect, { x, y, width: btnWidth, height: btnHeight });
-
-  // Button background
-  ctx.fillStyle = '#fff';
-  drawRoundedRect(x, y, btnWidth, btnHeight, borderRadius);
+  ui.gameOverButtonRect = new ButtonArea(x, y, btnWidth, btnHeight);
+  ui.gameOverButtonRect.draw(ctx, borderRadius, "#fff");
 
   // Button text
   ctx.fillStyle = '#333';
-  ctx.font = `bold ${Math.max(16, btnHeight * 0.4)}px sans-serif`;
+  ctx.font = getFontString(Math.max(16, btnHeight * 0.4));
   ctx.fillText('Restart', canvas.width / 2, y + btnHeight / 2);
 }
 
-function drawDetail() {
+function getFontString(fontSize) {
+  return `bold ${fontSize}px sans-serif`;
+}
 
+function clearCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawDraggingLine() {
+  if (isValidMouseDown) {
+    draggingLine.draw(ctx);
+  }
+}
+
+function drawDetail() {
+  clearCanvas();
 
   if (gameState.gameState === GAME_STATE.WAITING_FOR_OPTIONS) {
     drawStartOption();
@@ -481,33 +525,22 @@ function drawDetail() {
 
   // draw game elements
   // Draw lines
-  gameState.lines.forEach(line => {
-    line.draw(ctx);
-  });
+  gameState.lines.forEach(line => { line.draw(ctx); });
 
   // Draw triangles
-  gameState.triangles.forEach(triangle => {
-    triangle.draw(ctx);
-  });
+  gameState.triangles.forEach(triangle => { triangle.draw(ctx); });
 
   // Draw points
-  gameState.points.forEach(point => {
-    point.draw(ctx);
-  });
+  gameState.points.forEach(point => { point.draw(ctx); });
 
   // Scores Text
   drawScoreboardText();
 
-  // draw back button
+  // draw back to intro button
   drawBackButton();
 
-
-  // draw dragging line if in dragging state
-  if (startPoint && currentMousePos && isGameMouseDown) {
-    drawDraggingLine(startPoint, currentMousePos);
-  }
-
-
+  // animate -- draw dragging line
+  drawDraggingLine();
 
   if (gameState.gameState === GAME_STATE.GAME_ENDED) {
     drawGameOverOverlay();
@@ -516,37 +549,19 @@ function drawDetail() {
 
 
 function resizeCanvas() {
-  // const parent = canvas.parentElement;
-  // canvas.width = parent.clientWidth;
-  // canvas.height = parent.clientHeight;
-
   // set to fullscreen
-  const isPortrait = window.innerHeight > window.innerWidth;
-
-  gameState.isRotated = isPortrait;
-
-
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
   canvas.style.width = `${canvas.width}px`;
   canvas.style.height = `${canvas.height}px`;
 
-
-  mylog(`Canvas resized to ${canvas.width}x${canvas.height}, rotated: ${gameState.isRotated}`);
+  mylog(`Canvas resized to ${canvas.width}x${canvas.height}`);
   draw();
 }
 
 function draw() {
-  // ctx.save();
-
-  // if (gameState.isRotated) {
-  //   // Rotate the canvas coordinate system 90° clockwise
-  //   // ctx.translate(canvas.height, 0);
-  //   // ctx.rotate(Math.PI / 2);
-  // }
   drawDetail();
-  // ctx.restore();
 }
 
 function drawScoreboardText() {
@@ -610,40 +625,22 @@ function drawScoreboardText() {
   }
 }
 
-function drawDraggingLine(startPoint, currentMousePos) {
-
-  // Draw the dragging line
-  ctx.beginPath();
-  ctx.moveTo(startPoint.x, startPoint.y);
-  ctx.lineTo(currentMousePos.x, currentMousePos.y);
-  ctx.strokeStyle = Color.getLineColor(gameState.currPlayer);
-
-  if (!isValidMove) {
-    ctx.setLineDash([6, 4]);
-  }
-  ctx.stroke();
-  ctx.setLineDash([]);
-}
-
-
-
-
 // ======================= Controller Functions ======================
 
+let isSnapped = false;
+let isValidMove = false;
+let isValidMouseDown = false;
+let draggingLine = null;
+
+function resetDragState() {
+  isValidMove = false;
+  isSnapped = false;
+  draggingLine = null;
+}
+
+// convert from clientX/clientY to canvas coordinates
 function getTransformedMouseCoords(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
-
-  // if (gameState.isRotated) {
-  //   // When rotated 90 degrees clockwise:
-  //   const x = clientY - rect.top;
-  //   const y = canvas.height - (clientX - rect.left);
-  //   return { x, y };
-  // } else {
-  //   // Normal case
-  //   const x = clientX - rect.left;
-  //   const y = clientY - rect.top;
-  //   return { x, y };
-  // }
 
   const x = clientX - rect.left;
   const y = clientY - rect.top;
@@ -651,13 +648,13 @@ function getTransformedMouseCoords(clientX, clientY) {
   return { x, y }
 }
 
-
-let isSliderMouseDown = false;
-
 function updateSliderValueFromX(x) {
   const slider = ui.sliderRect;
+  if (!slider) {
+    return;
+  }
   const percent = Math.max(0, Math.min(1, (x - slider.x) / slider.width));
-  const newValue = Math.round(5 + percent * (50 - 5));
+  const newValue = Math.round(PTS_MIN + percent * (PTS_MAX - PTS_MIN));
   if (gameState.gameMode.points !== newValue) {
     gameState.gameMode.points = newValue;
     draw();
@@ -672,34 +669,19 @@ function hideGameWindow() {
 }
 
 function handleMouseDownBack(e) {
-  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
-  const x = coords.x;
-  const y = coords.y;
+  const { x, y } = getTransformedMouseCoords(e.clientX, e.clientY);
 
-  // Check Start button
-  const start = ui.backButtonRect;
-  if (
-    x >= start.x && x <= start.x + start.width &&
-    y >= start.y && y <= start.y + start.height
-  ) {
+  if (ui.backButtonRect.contains(x, y)) {
     hideGameWindow();
   }
-
 }
 
 function handleMouseDownStarting(e) {
-  // const rect = canvas.getBoundingClientRect();
-  // const x = e.clientX - rect.left;
-  // const y = e.clientY - rect.top;
-
-  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
-  const x = coords.x;
-  const y = coords.y;
+  const { x, y } = getTransformedMouseCoords(e.clientX, e.clientY);
 
   // Check game mode buttons
   for (let i = 0; i < ui.buttonRects.length; i++) {
-    const { x: bx, y: by, width, height } = ui.buttonRects[i];
-    if (x >= bx && x <= bx + width && y >= by && y <= by + height) {
+    if (ui.buttonRects[i].contains(x, y)) {
       gameState.gameMode.selectedMode = i;
       draw();
       return;
@@ -707,149 +689,95 @@ function handleMouseDownStarting(e) {
   }
 
   // Check slider interaction
-  const slider = ui.sliderRect;
-  if (
-    y >= slider.y - 10 && y <= slider.y + slider.height + 10 &&
-    x >= slider.x && x <= slider.x + slider.width
-  ) {
-    isSliderMouseDown = true;
+  if (ui.sliderRect.contains(x, y)) {
+    isValidMouseDown = true;
     updateSliderValueFromX(x);
     return;
   }
 
   // Check Start button
-  const start = ui.startButtonRect;
-  if (
-    x >= start.x && x <= start.x + start.width &&
-    y >= start.y && y <= start.y + start.height
-  ) {
+  if (ui.startButtonRect.contains(x, y)) {
     startGame();
   }
 }
 
 function handleMouseMoveStarting(e) {
-  if (!isSliderMouseDown) return;
+  if (!isValidMouseDown) return;
 
-  const rect = canvas.getBoundingClientRect();
-  // const x = e.clientX - rect.left;
-
-  // With this:
-  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
-  const x = coords.x;
-
+  const { x } = getTransformedMouseCoords(e.clientX, e.clientY);
   updateSliderValueFromX(x);
 }
 
-let startPoint = null;
-let currentMousePos = null;
-let isSnapped = false;
-let isValidMove = false;
-let isGameMouseDown = false;
 
 function handleMouseDownGame(e) {
-  const rect = canvas.getBoundingClientRect();
-  // const x = e.clientX - rect.left;
-  // const y = e.clientY - rect.top;
-
-  // With this:
-  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
-  const x = coords.x;
-  const y = coords.y;
+  const { x, y } = getTransformedMouseCoords(e.clientX, e.clientY);
+  const pt = new Point(x, y);
 
   for (let p of gameState.points) {
-    if (p.distanceTo(new Point(x, y)) <= SNAP_DISTANCE) {
-      startPoint = p;
-      currentMousePos = p;
-      isGameMouseDown = true;
+    if (p.distanceTo(pt) <= SNAP_DISTANCE) {
+      draggingLine = new Line(p, pt, gameState.currPlayer);
+      isValidMouseDown = true;
       break;
     }
   }
 }
 
 function handleMouseMoveGame(e) {
-  if (!isGameMouseDown || !startPoint) return;
+  if (!isValidMouseDown) return;
 
-  const rect = canvas.getBoundingClientRect();
-  // const x = e.clientX - rect.left;
-  // const y = e.clientY - rect.top;
+  const { x, y } = getTransformedMouseCoords(e.clientX, e.clientY);
+  const mousePoint = new Point(x, y);
+  mylog(`Mouse moved to: (${x}, ${y})`);
 
-  // With this:
-  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
-  const x = coords.x;
-  const y = coords.y;
-
-  // mylog(`Mouse moved to: (${x}, ${y})`);
-
-  // Try to snap to a real point
-  let snapped = null;
-  for (let p of gameState.points) {
-    if (p !== startPoint && p.distanceTo(new Point(x, y)) <= SNAP_DISTANCE) {
-      snapped = p;
-      break;
-    }
+  if (!draggingLine || !draggingLine.start) {
+    myerror("Dragging line start point is missing, cannot proceed.");
+    resetDragState();
+    return;
   }
 
-  if (snapped) {
-    currentMousePos = snapped;
-    // Check if line from startPoint to snapped is valid
-  } else {
-    currentMousePos = new Point(x, y);
-  }
-  isSnapped = (snapped !== null);
+  const st = draggingLine.start;
 
-  const newLine = new Line(startPoint, currentMousePos, gameState.currPlayer);
-  isValidMove = newLine.isValid(gameState.lines);
+  // Try to find a nearby point to snap to
+  const snapped = gameState.points.find(
+    p => !p.equals(st) && p.distanceTo(mousePoint) <= SNAP_DISTANCE
+  );
+
+  const ed = snapped ?? mousePoint;
+  isSnapped = !!snapped;
+
+  draggingLine = new Line(st, ed, gameState.currPlayer);
+  isValidMove = draggingLine.isValid(gameState.lines);
+  draggingLine.dashed = !isValidMove;
 
   draw();
-
 }
 
-
-function handleMouseUp(e) {
-  if (!isCanvasVisible()) {
-    return; // Ignore events if canvas is not visible
-  }
-  if (gameState.gameState === GAME_STATE.WAITING_FOR_OPTIONS) {
-    handleMouseUpStarting(e);
-  } else if (gameState.gameState === GAME_STATE.GAME_STARTED) {
-    handleMouseUpGame(e);
-  }
-}
-
-function handleMouseUpStarting(e) {
-  isSliderMouseDown = false;
-}
 
 function handleMouseUpGame(e) {
-  if (!isGameMouseDown || !startPoint) return;
-
-  isGameMouseDown = false;
 
   // Only allow saving if we actually snapped to a valid point
-  if (
-    currentMousePos instanceof Point &&
-    currentMousePos !== startPoint &&
-    isValidMove && isSnapped
-  ) {
+  if (isValidMove && isSnapped) {
     // Confirm the snap is to a valid endpoint
-    const endPoint = currentMousePos;
 
     // Create and save the line
-    const newLine = new Line(startPoint, endPoint, gameState.currPlayer);
+    const newLine = new Line(draggingLine.start, draggingLine.end, gameState.currPlayer);
     gameState.lines.push(newLine);
+
+    // check if valid triangle can be formed
+    const found = detectTriangles(newLine);
+    mylog(`Triangle found: ${found}`);
+
+    // Advance to the next player
+    if (!found) {
+      gameState.currPlayer = (gameState.currPlayer + 1) % gameState.numPlayers;
+    }
 
     // update the points' possible status
     for (let point of gameState.points) {
-      point.updatePossible(gameState.points, gameState.lines);
+      point.updateSafe(gameState.triangles);
     }
-
-    // check if valid triangle can be formed
-    let found = detectTriangles(newLine);
-    mylog(`Triangle found: ${found}`);
-
-    // Advance to the next player (optional logic)
-    if (!found) {
-      gameState.currPlayer = (gameState.currPlayer + 1) % gameState.numPlayers;
+    for (let point of gameState.points) {
+      point.updatePossible(gameState.points, gameState.lines);
     }
 
     // check if game is over
@@ -859,14 +787,23 @@ function handleMouseUpGame(e) {
   }
 
   // Reset drag state
-  startPoint = null;
-  currentMousePos = null;
-  isValidMove = false;
-  isSnapped = false;
-
+  resetDragState();
   draw();
 }
 
+function checkNewTriangle(triangle) {
+  // check if triangle is valid (not overlay with other triangles)
+  if (triangle.isValid(gameState.triangles)) {
+    gameState.triangles.push(triangle);
+    // Update scores
+    gameState.scores[triangle.owner] += 1;
+  }
+}
+
+/**
+ * @param {Line} newLine
+ * @returns {boolean} true if at least one triangle is found
+ */
 function detectTriangles(newLine) {
   // two ends of the new line is ensured to be valid
   const p1 = newLine.start;
@@ -879,31 +816,21 @@ function detectTriangles(newLine) {
   let exists = false;
   for (let i = 0; i < gameState.lines.length; i++) {
     let line = gameState.lines[i];
-    if (line !== newLine && (line.start === p1 || line.start === p2 || line.end === p1 || line.end === p2)) {
+    if (!line.isSameSegment(newLine) && line.shareAtLeastOneEndpoint(newLine)) {
       // We have a candidate line that shares an endpoint with the new line
       // find the missing line start and end
-      let otherPoint = (line.start === p1 || line.start === p2) ? line.end : line.start;
-      let sharedPoint = (otherPoint === line.start) ? line.end : line.start;
-      let otherPoint2 = (sharedPoint === p1) ? p2 : p1;
+      const otherPoint = newLine.hasEndpoint(line.start) ? line.end : line.start;
+      const sharedPoint = line.hasEndpoint(p1) ? p1 : p2;
+      const otherPoint2 = line.hasEndpoint(p1) ? p2 : p1;
+      const missingLine = new Line(otherPoint, otherPoint2, owner);
 
       // Check if line otherpoint to otherPoint2 already exists
       for (let j = i + 1; j < gameState.lines.length; j++) {
-        // for (let existingLine of gameState.lines) {
-        let existingLine = gameState.lines[j];
-        if (
-          (existingLine.start === otherPoint && existingLine.end === otherPoint2) ||
-          (existingLine.start === otherPoint2 && existingLine.end === otherPoint)
-        ) {
+        if (gameState.lines[j].isSameSegment(missingLine)) {
           exists = true;
           const triangle = new Triangle(sharedPoint, otherPoint, otherPoint2, owner);
-
-          // check if triangle is valid (not overlay with other triangles)
-          if (triangle.isValid(gameState.triangles)) {
-            gameState.triangles.push(triangle);
-            // Update scores
-            gameState.scores[owner] += 1;
-          }
-          // do not break since it might form many
+          checkNewTriangle(triangle);
+          // do not break since it might find many triangles, count all
         }
       }
     }
@@ -912,21 +839,9 @@ function detectTriangles(newLine) {
 }
 
 function handleMouseDownGameOver(e) {
-  const rect = canvas.getBoundingClientRect();
-  // const x = e.clientX - rect.left;
-  // const y = e.clientY - rect.top;
+  const { x, y } = getTransformedMouseCoords(e.clientX, e.clientY);
 
-  // With this:
-  const coords = getTransformedMouseCoords(e.clientX, e.clientY);
-  const x = coords.x;
-  const y = coords.y;
-
-  // Check if the click is within the game over button
-  const gameOverButton = ui.gameOverButtonRect;
-  if (
-    x >= gameOverButton.x && x <= gameOverButton.x + gameOverButton.width &&
-    y >= gameOverButton.y && y <= gameOverButton.y + gameOverButton.height
-  ) {
+  if (ui.backButtonRect.contains(x, y)) {
     // Reset the game state to start a new game
     gameState.gameState = GAME_STATE.WAITING_FOR_OPTIONS;
     initGameData();
@@ -935,9 +850,6 @@ function handleMouseDownGameOver(e) {
 }
 
 function handleMouseDown(e) {
-  if (!isCanvasVisible()) {
-    return; // Ignore events if canvas is not visible
-  }
   handleMouseDownBack(e);
   if (gameState.gameState === GAME_STATE.WAITING_FOR_OPTIONS) {
     handleMouseDownStarting(e);
@@ -949,9 +861,6 @@ function handleMouseDown(e) {
 }
 
 function handleMouseMove(e) {
-  if (!isCanvasVisible()) {
-    return; // Ignore events if canvas is not visible
-  }
   if (gameState.gameState === GAME_STATE.WAITING_FOR_OPTIONS) {
     handleMouseMoveStarting(e);
   } else if (gameState.gameState === GAME_STATE.GAME_STARTED) {
@@ -959,13 +868,23 @@ function handleMouseMove(e) {
   }
 }
 
+function handleMouseUp(e) {
+  if (!isValidMouseDown) {
+    return; // Ignore events if not dragging
+  }
+  isValidMouseDown = false;
+  if (gameState.gameState === GAME_STATE.GAME_STARTED) {
+    handleMouseUpGame(e);
+  }
+}
+
 function checkGameOver() {
-  // true if all points are not possible anymore
-  return gameState.points.every(point => !point.possible);
+  // false if any point is not safe (inside a triangle) and
+  // can connect to other non-safe points
+  return !gameState.points.some(point => (!point.safe && point.possibleWithoutSafe));
 }
 
 function gameLoop() {
-  // draw();
   requestAnimationFrame(gameLoop);
 }
 
@@ -978,14 +897,10 @@ function startGame() {
 }
 
 function isCanvasVisible() {
-  // check if canvas is visible
   return canvas.style.display !== 'none';
 }
 
 function handleTouchStart(e) {
-  if (!isCanvasVisible()) {
-    return; // Ignore touch events if canvas is not visible
-  }
   e.preventDefault();
   const touch = e.touches[0];
   const mouseEvent = { clientX: touch.clientX, clientY: touch.clientY };
@@ -993,9 +908,6 @@ function handleTouchStart(e) {
 }
 
 function handleTouchMove(e) {
-  if (!isCanvasVisible()) {
-    return; // Ignore touch events if canvas is not visible
-  }
   e.preventDefault();
   const touch = e.touches[0];
   const mouseEvent = { clientX: touch.clientX, clientY: touch.clientY };
@@ -1003,20 +915,25 @@ function handleTouchMove(e) {
 }
 
 function handleTouchEnd(e) {
-  if (!isCanvasVisible()) {
-    return; // Ignore touch events if canvas is not visible
-  }
   e.preventDefault();
   handleMouseUp(e);
 }
 
+function handleOnlyWhenCanvasVisible(func) {
+  return (e) => {
+    if (isCanvasVisible()) {
+      func(e);
+    }
+  }
+}
+
 // Global listener to stop dragging on mouse up
-window.addEventListener('mouseup', handleMouseUp);
-canvas.addEventListener('mousedown', handleMouseDown);
-canvas.addEventListener('mousemove', handleMouseMove);
-canvas.addEventListener('touchstart', handleTouchStart);
-canvas.addEventListener('touchmove', handleTouchMove);
-window.addEventListener('touchend', handleTouchEnd);
+window.addEventListener('mouseup', handleOnlyWhenCanvasVisible(handleMouseUp));
+canvas.addEventListener('mousedown', handleOnlyWhenCanvasVisible(handleMouseDown));
+canvas.addEventListener('mousemove', handleOnlyWhenCanvasVisible(handleMouseMove));
+canvas.addEventListener('touchstart', handleOnlyWhenCanvasVisible(handleTouchStart));
+canvas.addEventListener('touchmove', handleOnlyWhenCanvasVisible(handleTouchMove));
+window.addEventListener('touchend', handleOnlyWhenCanvasVisible(handleTouchEnd));
 
 function setupStartButton() {
   const startButton = document.getElementById('start-game');
