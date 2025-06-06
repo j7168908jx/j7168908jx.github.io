@@ -1,6 +1,11 @@
 
 var overlayScrollInit = function () {
-    OverlayScrollbarsGlobal.OverlayScrollbars(document.querySelector('#sidebar-secondary-nav'), {
+    const target = document.querySelector('#sidebar-secondary-nav');
+    if (!target) {
+        console.log("Element #sidebar-secondary-nav not found.");
+        return;
+    }
+    OverlayScrollbarsGlobal.OverlayScrollbars(target, {
         scrollbars: {
             autoHide: "move",
             autoHideDelay: 300,

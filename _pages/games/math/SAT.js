@@ -60,7 +60,7 @@ function getAxes(points) {
 }
 
 // Main: Check if two triangles overlap using SAT
-function doTrianglesOverlap(triA, triB, allowTouching) {
+export function doTrianglesOverlap(triA, triB, allowTouching) {
   const axesA = getAxes(triA.points);
   const axesB = getAxes(triB.points);
   const axes = axesA.concat(axesB); // Test all normals

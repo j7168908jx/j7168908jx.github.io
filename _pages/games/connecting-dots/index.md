@@ -38,6 +38,5 @@ Triangle rules:
 
 
 <link rel="stylesheet" href="game.css">
-<script src="SAT.js"></script>
-<script src="game.js"></script>
+<script type="module" src="game.js"></script>
 
