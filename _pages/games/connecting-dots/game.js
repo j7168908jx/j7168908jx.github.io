@@ -1,8 +1,13 @@
 import { PointBase, LineBase, TriangleBase } from '../math/common.js'
+import { DrawManager } from '../common/drawManager.js';
+
+// ====================== INITIALIZATION ======================
 
 document.addEventListener('DOMContentLoaded', function () {
   main();
 });
+
+// ====================== UTILITIES ======================
 
 function mylog(message) {
   if (typeof console !== 'undefined' && console.log) {
@@ -13,6 +18,36 @@ function mylog(message) {
 function myerror(message) {
   if (typeof console !== 'undefined' && console.error) {
     console.error(message);
+  }
+}
+
+// ====================== COLORS ======================
+
+class Color {
+  static getBackgroundColor(player) {
+    // Return color based on player (4 players at most)
+    return COLORS.BACKGROUNDS[player] || COLORS.GRAY;
+  }
+
+  static getPointColor(isDisabled) {
+    // Return color based on whether the point is disabled or not
+    return isDisabled ? COLORS.DISABLED : COLORS.DEFAULT;
+  }
+
+  static getLineColor(player) {
+    return COLORS.PLAYERS[player] || COLORS.DEFAULT;
+  }
+
+  static getTriangleColor(player) {
+    return COLORS.TRIANGLES[player] || COLORS.GRAY;
+  }
+
+  static getStartupBGColor() {
+    return COLORS.STARTUP_BACKGROUND;
+  }
+
+  static getShadowColor() {
+    return COLORS.SHADOW;
   }
 }
 
@@ -42,30 +77,7 @@ const COLORS = {
   SHADOW: 'rgba(0, 0, 0, 0.5)',
 };
 
-class Color {
-  static getBackgroundColor(player) {
-    // Return color based on player (4 players at most)
-    return COLORS.BACKGROUNDS[player] || COLORS.GRAY;
-  }
-
-  static getPointColor(isDisabled) {
-    // Return color based on whether the point is disabled or not
-    return isDisabled ? COLORS.DISABLED : COLORS.DEFAULT;
-  }
-
-  static getLineColor(player) {
-    return COLORS.PLAYERS[player] || COLORS.DEFAULT;
-  }
-
-  static getTriangleColor(player) {
-    return COLORS.TRIANGLES[player] || COLORS.GRAY;
-  }
-
-}
-
-
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+// ====================== CONSTANTS ======================
 
 const SNAP_DISTANCE = 15; // Distance to snap to a point
 const PTS_MIN = 5;  // Minimum number of points in the game
@@ -84,10 +96,14 @@ const GAME_STATE = Object.freeze({
   GAME_ENDED: 2
 });
 
-
 const buttonLabelLonger = ['Play vs Bot', '2 Players', '3 Players', '4 Players'];
 const buttonLabelShorter = ['Bot', '2P', '3P', '4P'];
 
+// ====================== CANVAS SETUP ======================
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const drawManager = new DrawManager(drawImpl);
 
 // ====================== GLOBAL STATE ======================
 
@@ -119,6 +135,19 @@ const ui = {
   backButtonRect: null,
 };
 
+let isValidMouseDown = false;
+const draggingState = {
+  isValidMove: false,
+  isSnapped: false,
+  draggingLine: null,
+  reset() {
+    this.isValidMove = false;
+    this.isSnapped = false;
+    this.draggingLine = null;
+  }
+};
+
+// ====================== HELPER CLASSES ======================
 
 class ButtonArea {
   // canvas coordinates
@@ -155,7 +184,7 @@ class ButtonArea {
   }
 }
 
-// ====================== Game Logic Classes ======================
+// ====================== GAME ENTITY CLASSES ======================
 
 class Point extends PointBase {
   constructor(x, y) {
@@ -258,55 +287,71 @@ class Triangle extends TriangleBase {
   }
 }
 
-
-// ====================== Game Logic Functions  ======================
-
-
+// ====================== GAME LOGIC FUNCTIONS ======================
 function generatePoints(count, width, height) {
-  const points = [];
-  const MIN_DISTANCE_BETWEEN_POINTS = 30; // Minimum distance between points
+  const MAXROUNDS = 10;
+  const MIN_DISTANCE_BETWEEN_POINTS = 10;
+  const MIN_DIST_FROM_LINES = 5;
 
-  // note: this cannot solve all too close cases, but no good idea for now
-  const MIN_DIST_FROM_LINES = 30; // Minimum distance between pts and any lines
-  let generated = 0;
+  let points = [];
 
-  while (generated < count) {
-    const x = Math.random() * width;
-    const y = Math.random() * height;
-    const newPoint = new Point(x, y);
-
-    // Check if too close to any existing point
-    let tooClose = false;
-    for (let p of points) {
-      if (newPoint.distanceTo(p) < MIN_DISTANCE_BETWEEN_POINTS) {
-        tooClose = true;
-        break;
-      }
+  for (let round = 0; round < MAXROUNDS; round++) {
+    // Try to generate new points up to desired count
+    while (points.length < count) {
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      points.push(new Point(x, y));
     }
 
-    for (let i = 0; (i < points.length) && !tooClose; i++) {
-      for (let j = i + 1; j < points.length; j++) {
-        if (newPoint.distanceToLineSegment(points[i], points[j]) < MIN_DIST_FROM_LINES) {
-          tooClose = true;
-          break;
+    // Filter points that are too close (but after removal others may become valid)
+    if (round < MAXROUNDS - 1) {
+      points = cleanPoints(points, MIN_DISTANCE_BETWEEN_POINTS, MIN_DIST_FROM_LINES);
+    }
+    console.log(`Round ${round + 1}: Generated ${points.length} points`);
+    if (points.length >= count) break;
+  }
+
+  return points.slice(0, count); // ensure final count
+}
+
+function cleanPoints(pointList, minDistPts, minDistLines) {
+
+  // return -1 if all points are valid, otherwise, return the last invalid point index
+  function checkValidness(points) {
+    for (let i = points.length - 1; i >= 0; i--) {
+      const p = points[i];
+
+      for (let j = 0; j < points.length; j++) {
+        if (i === j) continue;
+
+        const q = points[j];
+        if (p.distanceTo(q) < minDistPts) {
+          return i; // Found an invalid point
+        }
+
+        for (let k = j + 1; k < points.length; k++) {
+          if (i !== k && p.distanceToLineSegment(q, points[k]) < minDistLines) {
+            return i;
+          }
         }
       }
     }
-    if (!tooClose) {
-      points.push(newPoint);
-      generated++;
-    }
-    // Optional: prevent infinite loop if canvas is too small for the number of points
-    if (generated < count && points.length > count * 10) {
-      console.warn('Too many points generated, canvas may be too small for the number of points requested.');
-      break;
-    }
+    return -1;
   }
 
-  return points;
+  while (true) {
+    const invalidIndex = checkValidness(pointList);
+    if (invalidIndex === -1) {
+      // All points are valid
+      break;
+    }
+
+    // Remove the invalid point
+    pointList.splice(invalidIndex, 1);
+  }
+
+  return pointList;
 }
-
-
 
 function initGameData() {
   // set nplayers and pts
@@ -340,7 +385,106 @@ function initGameData() {
 
 }
 
-// ====================== Drawing Functions ======================
+function resetGame() {
+  gameState.gameState = GAME_STATE.WAITING_FOR_OPTIONS;
+  initGameData();
+  draw();
+}
+
+function startGame() {
+  // set gamemode to start
+  gameState.gameState = GAME_STATE.GAME_STARTED;
+  initGameData();
+  draw();
+}
+
+function checkGameOver() {
+  // false if any point is not safe (inside a triangle) and
+  // can connect to other non-safe points
+  return !gameState.points.some(point => (!point.safe && point.possibleWithoutSafe));
+}
+
+/**
+ * @param {Line} newLine
+ * @returns {boolean} true if at least one triangle is found
+ */
+function detectTriangles(newLine) {
+  // two ends of the new line is ensured to be valid
+  const p1 = newLine.start;
+  const p2 = newLine.end;
+  const owner = newLine.owner;
+
+  // Check all existing lines to see if they can form a triangle with the new line
+  // consider all owner's line can be used, no need to check the owner
+  let exists = false;
+  for (let i = 0; i < gameState.lines.length; i++) {
+    let line = gameState.lines[i];
+    if (!line.isSameSegment(newLine) && line.shareAtLeastOneEndpoint(newLine)) {
+      // We have a candidate line that shares an endpoint with the new line
+      // find the missing line start and end
+      const otherPoint = newLine.hasEndpoint(line.start) ? line.end : line.start;
+      const sharedPoint = line.hasEndpoint(p1) ? p1 : p2;
+      const otherPoint2 = line.hasEndpoint(p1) ? p2 : p1;
+      const missingLine = new Line(otherPoint, otherPoint2, owner);
+
+      // Check if line otherpoint to otherPoint2 already exists
+      for (let j = i + 1; j < gameState.lines.length; j++) {
+        if (gameState.lines[j].isSameSegment(missingLine)) {
+          exists = true;
+          const triangle = new Triangle(sharedPoint, otherPoint, otherPoint2, owner);
+          checkNewTriangle(triangle);
+          // do not break since it might find many triangles, count all
+        }
+      }
+    }
+  }
+  return exists; // No triangle found
+}
+
+function checkNewTriangle(triangle) {
+  // check if triangle is valid (not overlay with other triangles)
+  if (triangle.isValid(gameState.triangles)) {
+    gameState.triangles.push(triangle);
+    // Update scores
+    gameState.scores[triangle.owner] += 1;
+  }
+}
+
+// ====================== DRAWING FUNCTIONS ======================
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+
+function getFontString(fontSize) {
+  return `bold ${fontSize}px sans-serif`;
+}
+
+// texts is an array of objects with color, text, font properties
+// text is required, color and font are optional
+function drawColorText(texts, centerX, centerY, defaultFont, defaultColor) {
+  // compute total width
+  let totalWidth = 0;
+  texts.forEach(t => {
+    ctx.font = t.font || defaultFont;
+    totalWidth += ctx.measureText(t.text).width;
+  });
+
+  let x = centerX - totalWidth / 2;
+  let y = centerY;
+
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
+
+  texts.forEach(t => {
+    ctx.fillStyle = t.color || defaultColor;
+    ctx.font = t.font || defaultFont;
+    ctx.fillText(t.text, x, y);
+    x += ctx.measureText(t.text).width; // Move x position for next text
+  });
+
+}
 
 function drawBackButton() {
   const buttonWidth = Math.max(Math.min(30, canvas.width * 0.1), 40);
@@ -459,7 +603,7 @@ function drawStartButton() {
 }
 
 function drawStartOption() {
-  ctx.fillStyle = COLORS.STARTUP_BACKGROUND;
+  ctx.fillStyle = Color.getStartupBGColor();
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   drawModeButtons();
@@ -469,7 +613,7 @@ function drawStartOption() {
 
 function drawGameOverOverlay() {
   // Shade the whole canvas
-  ctx.fillStyle = COLORS.SHADOW;
+  ctx.fillStyle = Color.getShadowColor();
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   // 2. "Game Over" text
@@ -480,8 +624,12 @@ function drawGameOverOverlay() {
   ctx.fillText('Game Over', canvas.width / 2, canvas.height * 0.3);
 
   // player who wins
-  // const winner = gameState.scores.indexOf(Math.max(...gameState.scores));
-  // ctx.fillText(`Player ${winner + 1} wins!`, canvas.width / 2, canvas.height * 0.4);
+  const winner = gameState.scores.indexOf(Math.max(...gameState.scores));
+  drawColorText([
+    { text: "Player " },
+    { text: `${winner + 1}`, color: Color.getLineColor(winner) },
+    { text: " wins!" }
+  ], canvas.width / 2, canvas.height * 0.4, getFontString(Math.max(20, canvas.height * 0.04)), '#fff');
 
   // 3. Restart button
   const btnWidth = Math.max(160, canvas.width * 0.25);
@@ -497,24 +645,49 @@ function drawGameOverOverlay() {
   // Button text
   ctx.fillStyle = '#333';
   ctx.font = getFontString(Math.max(16, btnHeight * 0.4));
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
   ctx.fillText('Restart', canvas.width / 2, y + btnHeight / 2);
 }
 
-function getFontString(fontSize) {
-  return `bold ${fontSize}px sans-serif`;
-}
+function drawScoreboardText() {
+  const numPlayers = gameState.numPlayers;
+  const currPlayer = gameState.currPlayer;
 
-function clearCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const y = 10;
+
+  ctx.fillStyle = Color.getBackgroundColor(currPlayer);
+  ctx.fillRect(0, 0, canvas.width, y + 20);
+
+  const scoreTexts = [];
+  gameState.scores.forEach((score, i) => {
+    // Add score
+    scoreTexts.push({
+      text: `${score}`,
+      color: Color.getLineColor(i),
+    });
+
+    // Add slash after every score except the last
+    if (i < gameState.scores.length - 1) {
+      scoreTexts.push({ text: ' / ' });
+    }
+  });
+
+  drawColorText([
+    { text: `${numPlayers} Players - Current Player: ` },
+    { text: `${currPlayer + 1}`, color: Color.getLineColor(currPlayer) },
+    { text: ' | Score: ' },
+    ...scoreTexts
+  ], canvas.width / 2, 15, '16px sans-serif', "black");
 }
 
 function drawDraggingLine() {
   if (isValidMouseDown) {
-    draggingLine.draw(ctx);
+    draggingState.draggingLine.draw(ctx);
   }
 }
 
-function drawDetail() {
+function drawImpl() {
   clearCanvas();
 
   if (gameState.gameState === GAME_STATE.WAITING_FOR_OPTIONS) {
@@ -547,6 +720,13 @@ function drawDetail() {
   }
 }
 
+function draw() {
+  drawManager.requestDraw();
+}
+
+function drawImmediate() {
+  drawManager.forceDraw();
+}
 
 function resizeCanvas() {
   // set to fullscreen
@@ -557,95 +737,21 @@ function resizeCanvas() {
   canvas.style.height = `${canvas.height}px`;
 
   mylog(`Canvas resized to ${canvas.width}x${canvas.height}`);
-  draw();
+  drawImmediate();
 }
 
-function draw() {
-  drawDetail();
-}
-
-function drawScoreboardText() {
-  ctx.font = '16px sans-serif';
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
-
-  const y = 10;
-  const numPlayers = gameState.numPlayers;
-  const currPlayer = gameState.currPlayer;
-
-  const prefix = `${numPlayers} Players - Current Player: `;
-  const currPlayerText = `${currPlayer + 1}`;
-  const suffix = ' | Score: ';
-  const slash = ' / ';
-
-  // Precompute width of all elements
-  let totalWidth = ctx.measureText(prefix).width;
-  totalWidth += ctx.measureText(currPlayerText).width;
-  totalWidth += ctx.measureText(suffix).width;
-
-  for (let i = 0; i < numPlayers; i++) {
-    totalWidth += ctx.measureText(`${gameState.scores[i]}`).width;
-    if (i < numPlayers - 1) {
-      totalWidth += ctx.measureText(slash).width;
-    }
-  }
-
-  let x = (canvas.width - totalWidth) / 2;
-
-  ctx.fillStyle = Color.getBackgroundColor(currPlayer);
-  ctx.fillRect(0, 0, canvas.width, y + 20);
-
-  // Draw prefix
-  ctx.fillStyle = 'black';
-  ctx.fillText(prefix, x, y);
-  x += ctx.measureText(prefix).width;
-
-  // Draw current player number in color
-  ctx.fillStyle = Color.getLineColor(currPlayer);
-  ctx.fillText(currPlayerText, x, y);
-  x += ctx.measureText(currPlayerText).width;
-
-  // Draw suffix
-  ctx.fillStyle = 'black';
-  ctx.fillText(suffix, x, y);
-  x += ctx.measureText(suffix).width;
-
-  // Draw scores per player
-  for (let i = 0; i < numPlayers; i++) {
-    const scoreText = `${gameState.scores[i]}`;
-    ctx.fillStyle = Color.getLineColor(i);
-    ctx.fillText(scoreText, x, y);
-    x += ctx.measureText(scoreText).width;
-
-    if (i < numPlayers - 1) {
-      ctx.fillStyle = 'black';
-      ctx.fillText(slash, x, y);
-      x += ctx.measureText(slash).width;
-    }
-  }
-}
-
-// ======================= Controller Functions ======================
-
-let isSnapped = false;
-let isValidMove = false;
-let isValidMouseDown = false;
-let draggingLine = null;
-
-function resetDragState() {
-  isValidMove = false;
-  isSnapped = false;
-  draggingLine = null;
-}
+// ====================== INPUT HANDLING UTILITIES ======================
 
 // convert from clientX/clientY to canvas coordinates
 function getTransformedMouseCoords(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
-
   const x = clientX - rect.left;
   const y = clientY - rect.top;
-
   return { x, y }
+}
+
+function resetDragState() {
+  draggingState.reset();
 }
 
 function updateSliderValueFromX(x) {
@@ -667,6 +773,20 @@ function hideGameWindow() {
   // allow scroll
   document.body.style.overflow = 'auto';
 }
+
+function isCanvasVisible() {
+  return canvas.style.display !== 'none';
+}
+
+function handleOnlyWhenCanvasVisible(func) {
+  return (e) => {
+    if (isCanvasVisible()) {
+      func(e);
+    }
+  }
+}
+
+// ====================== MOUSE/TOUCH EVENT HANDLERS ======================
 
 function handleMouseDownBack(e) {
   const { x, y } = getTransformedMouseCoords(e.clientX, e.clientY);
@@ -691,13 +811,12 @@ function handleMouseDownStarting(e) {
   // Check slider interaction
   if (ui.sliderRect.contains(x, y)) {
     isValidMouseDown = true;
-    updateSliderValueFromX(x);
-    return;
+    updateSliderValueFromX(x);  // already handles redraw
   }
 
-  // Check Start button
+  // Check start button
   if (ui.startButtonRect.contains(x, y)) {
-    startGame();
+    startGame();  // already handles redraw
   }
 }
 
@@ -705,9 +824,8 @@ function handleMouseMoveStarting(e) {
   if (!isValidMouseDown) return;
 
   const { x } = getTransformedMouseCoords(e.clientX, e.clientY);
-  updateSliderValueFromX(x);
+  updateSliderValueFromX(x);  // already handles redraw
 }
-
 
 function handleMouseDownGame(e) {
   const { x, y } = getTransformedMouseCoords(e.clientX, e.clientY);
@@ -715,7 +833,7 @@ function handleMouseDownGame(e) {
 
   for (let p of gameState.points) {
     if (p.distanceTo(pt) <= SNAP_DISTANCE) {
-      draggingLine = new Line(p, pt, gameState.currPlayer);
+      draggingState.draggingLine = new Line(p, pt, gameState.currPlayer);
       isValidMouseDown = true;
       break;
     }
@@ -729,13 +847,13 @@ function handleMouseMoveGame(e) {
   const mousePoint = new Point(x, y);
   mylog(`Mouse moved to: (${x}, ${y})`);
 
-  if (!draggingLine || !draggingLine.start) {
+  if (!draggingState.draggingLine || !draggingState.draggingLine.start) {
     myerror("Dragging line start point is missing, cannot proceed.");
     resetDragState();
     return;
   }
 
-  const st = draggingLine.start;
+  const st = draggingState.draggingLine.start;
 
   // Try to find a nearby point to snap to
   const snapped = gameState.points.find(
@@ -743,24 +861,26 @@ function handleMouseMoveGame(e) {
   );
 
   const ed = snapped ?? mousePoint;
-  isSnapped = !!snapped;
+  draggingState.isSnapped = !!snapped;
 
-  draggingLine = new Line(st, ed, gameState.currPlayer);
-  isValidMove = draggingLine.isValid(gameState.lines);
-  draggingLine.dashed = !isValidMove;
+  const line = new Line(st, ed, gameState.currPlayer);
+  const isValid = line.isValid(gameState.lines);
+
+  line.dashed = !isValid;
+  draggingState.isValidMove = isValid;
+  draggingState.draggingLine = line;
 
   draw();
 }
 
-
 function handleMouseUpGame(e) {
 
   // Only allow saving if we actually snapped to a valid point
-  if (isValidMove && isSnapped) {
+  if (draggingState.isValidMove && draggingState.isSnapped) {
     // Confirm the snap is to a valid endpoint
 
     // Create and save the line
-    const newLine = new Line(draggingLine.start, draggingLine.end, gameState.currPlayer);
+    const newLine = new Line(draggingState.draggingLine.start, draggingState.draggingLine.end, gameState.currPlayer);
     gameState.lines.push(newLine);
 
     // check if valid triangle can be formed
@@ -791,61 +911,12 @@ function handleMouseUpGame(e) {
   draw();
 }
 
-function checkNewTriangle(triangle) {
-  // check if triangle is valid (not overlay with other triangles)
-  if (triangle.isValid(gameState.triangles)) {
-    gameState.triangles.push(triangle);
-    // Update scores
-    gameState.scores[triangle.owner] += 1;
-  }
-}
-
-/**
- * @param {Line} newLine
- * @returns {boolean} true if at least one triangle is found
- */
-function detectTriangles(newLine) {
-  // two ends of the new line is ensured to be valid
-  const p1 = newLine.start;
-  const p2 = newLine.end;
-  const owner = newLine.owner;
-
-  // Check all existing lines to see if they can form a triangle with the new line
-  // consider all owner's line can be used, no need to check the owner
-  // for (let line of gameState.lines) {
-  let exists = false;
-  for (let i = 0; i < gameState.lines.length; i++) {
-    let line = gameState.lines[i];
-    if (!line.isSameSegment(newLine) && line.shareAtLeastOneEndpoint(newLine)) {
-      // We have a candidate line that shares an endpoint with the new line
-      // find the missing line start and end
-      const otherPoint = newLine.hasEndpoint(line.start) ? line.end : line.start;
-      const sharedPoint = line.hasEndpoint(p1) ? p1 : p2;
-      const otherPoint2 = line.hasEndpoint(p1) ? p2 : p1;
-      const missingLine = new Line(otherPoint, otherPoint2, owner);
-
-      // Check if line otherpoint to otherPoint2 already exists
-      for (let j = i + 1; j < gameState.lines.length; j++) {
-        if (gameState.lines[j].isSameSegment(missingLine)) {
-          exists = true;
-          const triangle = new Triangle(sharedPoint, otherPoint, otherPoint2, owner);
-          checkNewTriangle(triangle);
-          // do not break since it might find many triangles, count all
-        }
-      }
-    }
-  }
-  return exists; // No triangle found
-}
-
 function handleMouseDownGameOver(e) {
   const { x, y } = getTransformedMouseCoords(e.clientX, e.clientY);
 
-  if (ui.backButtonRect.contains(x, y)) {
+  if (ui.gameOverButtonRect.contains(x, y)) {
     // Reset the game state to start a new game
-    gameState.gameState = GAME_STATE.WAITING_FOR_OPTIONS;
-    initGameData();
-    draw();
+    resetGame();
   }
 }
 
@@ -878,28 +949,6 @@ function handleMouseUp(e) {
   }
 }
 
-function checkGameOver() {
-  // false if any point is not safe (inside a triangle) and
-  // can connect to other non-safe points
-  return !gameState.points.some(point => (!point.safe && point.possibleWithoutSafe));
-}
-
-function gameLoop() {
-  requestAnimationFrame(gameLoop);
-}
-
-function startGame() {
-  // set gamemode to start
-  gameState.gameState = GAME_STATE.GAME_STARTED;
-  initGameData();
-  draw();
-
-}
-
-function isCanvasVisible() {
-  return canvas.style.display !== 'none';
-}
-
 function handleTouchStart(e) {
   e.preventDefault();
   const touch = e.touches[0];
@@ -919,21 +968,7 @@ function handleTouchEnd(e) {
   handleMouseUp(e);
 }
 
-function handleOnlyWhenCanvasVisible(func) {
-  return (e) => {
-    if (isCanvasVisible()) {
-      func(e);
-    }
-  }
-}
-
-// Global listener to stop dragging on mouse up
-window.addEventListener('mouseup', handleOnlyWhenCanvasVisible(handleMouseUp));
-canvas.addEventListener('mousedown', handleOnlyWhenCanvasVisible(handleMouseDown));
-canvas.addEventListener('mousemove', handleOnlyWhenCanvasVisible(handleMouseMove));
-canvas.addEventListener('touchstart', handleOnlyWhenCanvasVisible(handleTouchStart));
-canvas.addEventListener('touchmove', handleOnlyWhenCanvasVisible(handleTouchMove));
-window.addEventListener('touchend', handleOnlyWhenCanvasVisible(handleTouchEnd));
+// ====================== UI SETUP FUNCTIONS ======================
 
 function setupStartButton() {
   const startButton = document.getElementById('start-game');
@@ -958,8 +993,6 @@ function setupStartButton() {
     const resetButton = document.getElementById('reset-game');
     resetButton.style.display = 'block';
   });
-
-
 }
 
 function setupResetButton() {
@@ -981,11 +1014,26 @@ function setupResetButton() {
     startButton.textContent = 'Click to start the game';
 
     // reset the game state
-    gameState.gameState = GAME_STATE.WAITING_FOR_OPTIONS;
-    initGameData();
-    draw();
+    resetGame();
   });
 }
+
+// ====================== EVENT LISTENERS ======================
+
+// Global listener to stop dragging on mouse up
+window.addEventListener('mouseup', handleOnlyWhenCanvasVisible(handleMouseUp));
+canvas.addEventListener('mousedown', handleOnlyWhenCanvasVisible(handleMouseDown));
+canvas.addEventListener('mousemove', handleOnlyWhenCanvasVisible(handleMouseMove));
+canvas.addEventListener('touchstart', handleOnlyWhenCanvasVisible(handleTouchStart));
+canvas.addEventListener('touchmove', handleOnlyWhenCanvasVisible(handleTouchMove));
+window.addEventListener('touchend', handleOnlyWhenCanvasVisible(handleTouchEnd));
+
+// ====================== MAIN LOOP & INITIALIZATION ======================
+
+function gameLoop() {
+  requestAnimationFrame(gameLoop);
+}
+
 
 function main() {
   setupStartButton();

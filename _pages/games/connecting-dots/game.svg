@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="11.892 0 790.556 453.104" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:export>
+      <bx:file format="svg" normalization="{&quot;removeBoxySVGMetadata&quot;:true}"/>
+    </bx:export>
+  </defs>
+  <text x="400" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#333" style="white-space: pre;">Connecting Dots - How to Play</text>
+  <text x="34.611" y="50.103" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333" style="white-space: pre; font-size: 14px;">1. Basic Setup (2-4 Players)</text>
+  <g transform="translate(50,70)">
+    <circle cx="0" cy="0" r="4" fill="black"/>
+    <circle cx="40" cy="0" r="4" fill="black"/>
+    <circle cx="80" cy="0" r="4" fill="black"/>
+    <circle cx="120" cy="0" r="4" fill="black"/>
+    <circle cx="0" cy="40" r="4" fill="black"/>
+    <circle cx="40" cy="40" r="4" fill="black"/>
+    <circle cx="80" cy="40" r="4" fill="black"/>
+    <circle cx="120" cy="40" r="4" fill="black"/>
+    <circle cx="0" cy="80" r="4" fill="black"/>
+    <circle cx="40" cy="80" r="4" fill="black"/>
+    <circle cx="80" cy="80" r="4" fill="black"/>
+    <circle cx="120" cy="80" r="4" fill="black"/>
+  </g>
+  <text x="200" y="95" font-family="Arial, sans-serif" font-size="12" fill="#666" style="white-space: pre;">Players take turns drawing lines between dots</text>
+  <text style="fill: rgb(102, 102, 102); font-family: Arial, sans-serif; font-size: 12px; font-weight: 700; white-space: pre;" x="199.65" y="121.937">⛳Goal: Form triangles 👉 score points!</text>
+  <text x="34.961" y="195.946" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333" style="white-space: pre; font-size: 14px;">2. Valid Triangle Formation</text>
+  <g transform="translate(50,210)">
+    <circle cx="0" cy="0" r="4" fill="black"/>
+    <circle cx="60" cy="0" r="4" fill="black"/>
+    <circle cx="30" cy="52" r="4" fill="black"/>
+    <line x1="0" y1="0" x2="60" y2="0" stroke="red" stroke-width="3"/>
+    <line x1="60" y1="0" x2="30" y2="52" stroke="red" stroke-width="3"/>
+    <line x1="30" y1="52" x2="0" y2="0" stroke="red" stroke-width="3"/>
+    <text style="white-space: pre;" x="30" y="25" text-anchor="middle" font-weight="bold" font-size="18" font-family="Arial, sans-serif" fill="red">+1</text>
+  </g>
+  <text style="fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 12px; white-space: pre;"><tspan x="150" y="235">✓ </tspan><tspan style="fill: rgb(255, 0, 0);">Red</tspan><tspan> Player forms triangle = 1 point</tspan></text>
+  <text x="150" y="250" font-family="Arial, sans-serif" font-size="12" fill="#333" style="white-space: pre;">✓ Gets to draw another line!</text>
+  <text x="400" y="190" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333" style="white-space: pre;">3. No Crossing Lines!</text>
+  <circle cx="450" cy="210" r="4" fill="black" style="stroke-width: 1;"/>
+  <circle cx="510" cy="210" r="4" fill="black" style="stroke-width: 1;"/>
+  <circle cx="450" cy="270" r="4" fill="black" style="stroke-width: 1;"/>
+  <circle cx="510" cy="270" r="4" fill="black" style="stroke-width: 1;"/>
+  <line x1="450" y1="210" x2="510" y2="270" stroke="blue" stroke-width="3" style="stroke-width: 3;"/>
+  <line x1="510" y1="210" x2="450" y2="270" stroke="red" stroke-width="3" stroke-dasharray="5,5" style="stroke-width: 3;"/>
+  <text x="482.099" y="218.418" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="red" style="white-space: pre; stroke-width: 1; font-size: 20px;">✗</text>
+  <text x="530" y="235" font-family="Arial, sans-serif" font-size="12" fill="#333" style="white-space: pre;">✗ Cannot cross existing lines</text>
+  <text x="400" y="320" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333" style="white-space: pre;">5. Invalid Triangle</text>
+  <circle cx="450" cy="340" r="4" fill="black" style="stroke-width: 1;"/>
+  <circle cx="530" cy="340" r="4" fill="black" style="stroke-width: 1;"/>
+  <circle cx="490" cy="360" r="4" fill="black" style="stroke-width: 1;"/>
+  <circle cx="490" cy="410" r="4" fill="black" style="stroke-width: 1;"/>
+  <line x1="450" y1="340" x2="530" y2="340" stroke="blue" stroke-width="2" style="stroke-width: 2;"/>
+  <line x1="530" y1="340" x2="490" y2="360" stroke-width="2" style="stroke-width: 2; stroke: rgb(255, 62, 62);"/>
+  <line x1="490" y1="360" x2="450" y2="340" stroke-width="2" style="stroke-width: 2; stroke: rgb(255, 62, 62);"/>
+  <line x1="450" y1="340" x2="490" y2="410" stroke-width="2" style="stroke-width: 2; stroke: rgb(0, 0, 255);"/>
+  <line x1="490" y1="410" x2="530" y2="340" stroke-width="2" style="stroke-width: 2; fill: rgb(0, 0, 255); stroke: rgb(0, 0, 255);"/>
+  <text style="fill: rgb(255, 0, 0); font-family: Arial, sans-serif; text-anchor: middle; white-space: pre;" x="490.699" y="355.621">✗</text>
+  <text style="fill: rgb(255, 0, 0); font-family: Arial, sans-serif; font-size: 10px; white-space: pre;" x="535.311" y="390.532">✗ Cannot form triangle</text>
+  <text style="fill: rgb(255, 0, 0); font-family: Arial, sans-serif; font-size: 10px; white-space: pre;" x="538.71" y="403.582">inside existing triangle</text>
+  <text x="32.177" y="321.305" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333" style="white-space: pre; font-size: 14px;">4. End Game - No More Moves To Earn Points</text>
+  <circle cx="50.35" cy="349.35" r="4" style="stroke-width: 1; fill: rgb(191, 191, 191);"/>
+  <circle cx="90.35" cy="349.35" r="4" style="stroke-width: 1; fill: rgb(191, 191, 191);"/>
+  <circle cx="130.35" cy="349.35" r="4" style="stroke-width: 1; fill: rgb(191, 191, 191);"/>
+  <circle cx="70.35" cy="384.35" r="4" style="stroke-width: 1; fill: rgb(191, 191, 191);"/>
+  <circle cx="110.35" cy="384.35" r="4" style="stroke-width: 1; fill: rgb(191, 191, 191);"/>
+  <line x1="50.35" y1="349.35" x2="90.35" y2="349.35" stroke="red" stroke-width="2" style="stroke-width: 2;"/>
+  <line x1="90.35" y1="349.35" x2="70.35" y2="384.35" stroke="blue" stroke-width="2" style="stroke-width: 2;"/>
+  <line x1="70.35" y1="384.35" x2="50.35" y2="349.35" stroke="red" stroke-width="2" style="stroke-width: 2;"/>
+  <line x1="90.35" y1="349.35" x2="130.35" y2="349.35" stroke="blue" stroke-width="2" style="stroke-width: 2;"/>
+  <line x1="130.35" y1="349.35" x2="110.35" y2="384.35" stroke="red" stroke-width="2" style="stroke-width: 2;"/>
+  <text x="122.877" y="412.744" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#666" style="white-space: pre; stroke-width: 1; font-size: 10px;">Gray dots = No valid moves possible</text>
+  <g transform="matrix(1, 0, 0, 1, 250.000007, 349.00001)">
+    <rect x="0" y="0" width="140" height="60" fill="#f0f0f0" stroke="#333" stroke-width="2"/>
+    <text x="70" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333" style="white-space: pre;">GAME OVER</text>
+    <text x="20" y="35" font-family="Arial, sans-serif" font-size="12" fill="red" font-weight="bold" style="white-space: pre;">Red: 1 points</text>
+    <text x="20" y="50" font-family="Arial, sans-serif" font-size="12" fill="blue" font-weight="bold" style="white-space: pre;">Blue: 2 points</text>
+    <text style="fill: rgb(0, 0, 255); font-family: Arial, sans-serif; font-size: 10px; font-weight: 700; text-anchor: middle; white-space: pre;" x="68.251" y="80.182">BLUE WINS!</text>
+  </g>
+  <g transform="matrix(1, 0, 0, 1, 543.034135, 72.538683)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333" style="white-space: pre;">Strategy Tips:</text>
+    <text x="0" y="18" font-family="Arial, sans-serif" font-size="11" fill="#666" style="white-space: pre;">• Block opponent's potential triangles</text>
+    <text x="0" y="32" font-family="Arial, sans-serif" font-size="11" fill="#666" style="white-space: pre;">• Create multiple triangle opportunities</text>
+    <text x="0" y="46" font-family="Arial, sans-serif" font-size="11" fill="#666" style="white-space: pre;">• Plan ahead - think 2-3 moves forward</text>
+    <text x="0" y="60" font-family="Arial, sans-serif" font-size="11" fill="#666" style="white-space: pre;">• Force opponent into bad positions</text>
+  </g>
+  <g transform="matrix(1, 0, 0, 1, 618.187091, 262.704781)">
+    <rect x="0" y="0" width="140" height="100" fill="none" stroke="#333" stroke-width="1"/>
+    <text x="70" y="15" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333" style="white-space: pre;">Legend</text>
+    <circle cx="15" cy="30" r="4" fill="black"/>
+    <text x="25" y="35" font-family="Arial, sans-serif" font-size="10" fill="#333" style="white-space: pre;">Active dot</text>
+    <circle cx="15" cy="45" r="4" fill="gray"/>
+    <text x="25" y="50" font-family="Arial, sans-serif" font-size="10" fill="#333" style="white-space: pre;">No valid moves</text>
+    <line x1="10" y1="60" x2="30" y2="60" stroke="red" stroke-width="3"/>
+    <text x="35" y="65" font-family="Arial, sans-serif" font-size="10" fill="#333" style="white-space: pre;">Player 1 line</text>
+    <line x1="10" y1="75" x2="30" y2="75" stroke="blue" stroke-width="3"/>
+    <text x="35" y="80" font-family="Arial, sans-serif" font-size="10" fill="#333" style="white-space: pre;">Player 2 line</text>
+    <line x1="10" y1="90" x2="30" y2="90" stroke="black" stroke-width="2" stroke-dasharray="3,3"/>
+    <text x="35" y="95" font-family="Arial, sans-serif" font-size="10" fill="#333" style="white-space: pre;">Planned move</text>
+  </g>
+  <path d="M -78.866 -261.26 L -48.613 -211.245 L -109.12 -211.245 L -78.866 -261.26 Z" bx:shape="triangle -109.12 -261.26 60.507 50.015 0.5 0 1@af7896a9" style="paint-order: fill; stroke: rgba(0, 0, 0, 0); transform-box: fill-box; transform-origin: 50% 50%; fill: rgba(255, 0, 0, 0.153);" transform="matrix(-1, 0, 0, -1, 157.733002, 472.505005)"/>
+  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px;" x="33.226" y="298.339"> </text>
+  <line x1="69.886" y1="384.028" x2="109.886" y2="384.028" stroke="red" stroke-width="2" style="stroke-width: 2;"/>
+  <line x1="110.379" y1="384.04" x2="90.379" y2="349.04" stroke-width="2" style="stroke-width: 2; fill: rgb(0, 0, 255); stroke: rgb(0, 0, 255);"/>
+  <path d="M -69.954 -385.25 L -49.844 -349.225 L -90.065 -349.225 L -69.954 -385.25 Z" bx:shape="triangle -90.065 -385.25 40.221 36.025 0.5 0 1@e6c17302" style="paint-order: fill; stroke: rgba(0, 0, 0, 0); fill: rgba(255, 0, 0, 0.153); stroke-width: 1; transform-origin: -69.952px -367.239px;" transform="matrix(-1, 0, 0, -1, 139.903381, 734.478394)"/>
+  <path d="M -110.869 -385.6 L -90.759 -349.575 L -130.98 -349.575 L -110.869 -385.6 Z" bx:shape="triangle -130.98 -385.6 40.221 36.025 0.5 0 1@c887c19c" style="paint-order: fill; stroke-width: 1; transform-origin: -110.869px -367.591px; stroke: rgba(255, 255, 255, 0); fill: rgba(0, 0, 255, 0.196);" transform="matrix(-1, 0, 0, -1, 221.73764, 735.181396)"/>
+  <path d="M 90.935 348.185 L 111.045 384.21 L 70.824 384.21 L 90.935 348.185 Z" bx:shape="triangle 70.824 348.185 40.221 36.025 0.5 0 1@4c825833" style="paint-order: fill; stroke-width: 1; stroke: rgba(255, 255, 255, 0); fill: rgba(0, 0, 255, 0.196); transform-origin: 90.935px 366.194px;"/>
+  <path d="M -490.004 -409.74 L -449.608 -339.09 L -530.4 -339.09 L -490.004 -409.74 Z" bx:shape="triangle -530.4 -409.74 80.792 70.65 0.5 0 1@f59a5ec0" style="paint-order: fill; stroke-width: 1; stroke: rgba(255, 255, 255, 0); fill: rgba(0, 0, 255, 0.196); transform-origin: -490px -374.416px;" transform="matrix(-1, 0, 0, -1, 980.000061, 748.831848)"/>
+  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 14.8px;" x="399.323" y="449.439" transform="matrix(0.58902, 0, 0, 0.595433, 298.949258, 182.296407)">Disclaimer: This is generated by Claude Sonnet 4 &amp; edited manually</text>
+</svg>

@@ -18,6 +18,9 @@ This is a simple game I adopted from a tiktok video.
 
 Rules: connect the dots to form more triangles to win!
 
+![](game.svg)
+
+
 - Each player take turns to draw a line between two dots.
 - When a player completes a triangle, it can continue to draw one more line until no more triangles are formed. One point is awarded for each triangle formed.
 - The game ends when no valid moves (that can earn a point) are left.
