@@ -50,12 +50,15 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
 
-        const target = document.querySelector(this.getAttribute('href'));
+        const id = this.getAttribute('href').slice(1);
+        const target = document.getElementById(id);
+        if (!target) return;
+
         const targetPosition = target.getBoundingClientRect().top + window.scrollY;
 
         window.scrollTo({
-            top: targetPosition - window.innerHeight / 3.0, // Subtract 1/3 height
-            behavior: 'smooth' // Optional: smooth scrolling
+            top: targetPosition - window.innerHeight / 3.0,
+            behavior: 'smooth'
         });
     });
 });
