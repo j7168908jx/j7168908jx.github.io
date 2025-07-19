@@ -118,12 +118,7 @@ run_segment() {
     local write_bw=$(echo "${fields[$((num_fields-2))]}" | xargs)
     local total_bw=$(echo "${fields[$((num_fields-1))]}" | xargs)
 
-    # Use consistent colors - no color changes based on bandwidth
-    local bg_color="colour235"  # dark gray
-    local fg_color="colour255"  # white
-
-    # Simple format: 💾↓1234MB/s↑567MB/s
-    content="💾 ↓ ${read_bw} ↑ ${write_bw}"
+    content="📜 R ${read_bw} W ${write_bw}"
 
     echo "${content}"
     return 0
@@ -140,7 +135,7 @@ setting the permissions to allow execution and we can test the output:
 
 ```bash
 $ ./memory-bandwidth.sh
-💾 ↓ 481.66 ↑ 587.30
+📜 R 481.66 W 587.30
 ```
 
 and we are ready to add it to the tmux powerline.
