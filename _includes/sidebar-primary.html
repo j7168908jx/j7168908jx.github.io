@@ -1,17 +1,14 @@
-<nav class="sidebar-nav" id="sidebar-primary-nav">
-
-    <!-- A beautiful tree fig -->
-    <ul>
-        <li><div class="elegant-tree">
-            <a href="mailto:j7168908jx@gmail.com">
-                <img id="elegant-tree-img" src="/assets/img/four-seasons-tree-illustration.svg" alt="My Favorite Tree">
-            </a>
-        </div></li>
-        <li><a href="/">About</a></li>
-        <li><a href="/posts.html">Posts</a></li>
-        <li><a href="/quant-questions.html">Quant</a></li>
-        <li><a href="/games/index.html">Games</a></li>
-    </ul>
-
-
-</nav>
+<div class="widget card">
+  <div class="card-body">
+    <a class="widget-avatar" href="mailto:j7168908jx@gmail.com">
+      <img id="elegant-tree-img" src="/assets/img/four-seasons-tree-illustration.svg" alt="My Favorite Tree">
+    </a>
+    <nav class="widget-nav" id="sidebar-primary-nav" aria-label="Site navigation">
+      <ul class="nav-pills">
+        {% for item in site.data.navigation %}
+        <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</div>

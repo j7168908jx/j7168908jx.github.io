@@ -2,10 +2,64 @@
 # install and build the necessary packages
 set -e
 
-if ! command -v gem &>/dev/null
+endpoint=${BUNDLE_MIRROR:-https://rubygems.org}
+curl_log=${TMPDIR:-/tmp}/bootstrap-curl.log
+trap 'rm -f "$curl_log"' EXIT HUP INT TERM
+
+if [ "${SKIP_NETWORK_CHECK:-0}" != "1" ] && command -v curl >/dev/null 2>&1
+then
+    printf '%s' "Checking connectivity to ${endpoint}... "
+    http_status=$(curl -sS -w '%{http_code}' --connect-timeout 5 --retry 0 \
+        -o /dev/null "$endpoint" 2>"$curl_log" || printf '')
+    if [ -z "$http_status" ]
+    then
+        http_status=000
+    fi
+    if [ "$http_status" = "000" ]
+    then
+        printf '\n' >&2
+        cat "$curl_log" >&2
+        printf '\nUnable to reach %s. Verify that your network connection allows outbound HTTPS.\n' "$endpoint" >&2
+        printf 'Set SKIP_NETWORK_CHECK=1 to bypass this preflight once connectivity is restored.\n' >&2
+        exit 1
+    fi
+
+    case "$http_status" in
+        200|201|204|3??)
+            printf 'ok (%s)\n' "$http_status"
+            ;;
+        403)
+            printf 'blocked (%s)\n' "$http_status"
+            cat "$curl_log" >&2
+            printf '\nReceived HTTP 403 when contacting %s.\n' "$endpoint" >&2
+            printf 'If your environment requires a proxy or mirror, configure it via HTTPS_PROXY/HTTP_PROXY or BUNDLE_MIRROR.\n' >&2
+            printf 'You can re-run with SKIP_NETWORK_CHECK=1 once access is permitted.\n' >&2
+            exit 1
+            ;;
+        *)
+            printf 'unexpected (%s)\n' "$http_status"
+            cat "$curl_log" >&2
+            printf '\nUnable to verify connectivity to %s (HTTP %s).\n' "$endpoint" "$http_status" >&2
+            printf 'Check your network or set SKIP_NETWORK_CHECK=1 to bypass this preflight.\n' >&2
+            exit 1
+            ;;
+    esac
+fi
+
+if ! command -v gem >/dev/null 2>&1
 then
     scl enable rh-ruby26 bash
 fi
-gem install bundler
+if ! command -v bundle >/dev/null 2>&1
+then
+    gem install bundler
+fi
+
 bundle config set --local path 'vendor/bundle'
+
+if [ -n "${BUNDLE_MIRROR:-}" ]
+then
+    bundle config set --local "mirror.https://rubygems.org" "$BUNDLE_MIRROR"
+fi
+
 bundle install

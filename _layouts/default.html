@@ -4,22 +4,19 @@
 <head>
   <meta charset="UTF-8">
 
-  <title>{{ page.title | default: site.title | default: site.github.repository_name }} | {{ page.subtitle | default:
-    site.subtitle | default: site.github.project_tagline }}</title>
+  <title>{{ page.title | default: site.title | default: site.github.repository_name }} | {{ page.subtitle | default: site.subtitle | default: site.github.project_tagline }}</title>
 
   <!-- The SEO tag works for Search Engine https://github.com/jekyll/jekyll-seo-tag -->
   {% seo %}
 
   <!-- also include custom math macros -->
-  <script type="text/javascript" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js">
-    </script>
-  <script type="text/javascript" async
-    src="/assets/js/custom-math.js"></script>
+  <script type="text/javascript" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"></script>
+  <script type="text/javascript" async src="/assets/js/custom-math.js"></script>
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style"
-    type="text/css" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&family=Open+Sans:wght@400;700&display=swap">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#157878">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,28 +30,37 @@
 
 </head>
 
+<body class="theme-icarus">
+  {% assign show_secondary = false %}
+  {% if page.toc == true %}
+  {% assign show_secondary = true %}
+  {% endif %}
 
-<body>
-  {% include header.html %}
+  <div class="site-shell">
+    {% include header.html %}
 
-  <main class="main-frame">
-    <div class="sidebar sidebar-primary" role="navigation">
-      {% include sidebar-primary.html %}
-    </div>
-    {% if page.toc == true %}
-    <div class="sidebar sidebar-secondary" role="navigation">
-    {% else %}
-    <div style="display: none" class="sidebar sidebar-secondary" role="navigation">
-    {% endif %}
-      {% include sidebar-secondary.html %}
-    </div>
-    <div id="content" class="main-content" role="main">
-      {{ content }}
-    </div>
-  </main>
+    <main class="main-frame{% unless show_secondary %} main-frame--no-secondary{% endunless %}">
+      <aside class="sidebar sidebar-primary" role="complementary">
+        {% include sidebar-primary.html %}
+      </aside>
 
-  {% include footer.html %}
+      <div class="main-content" role="main">
+        <article class="card article-card">
+          <div class="card-body">
+            {{ content }}
+          </div>
+        </article>
+      </div>
 
+      {% if show_secondary %}
+      <aside class="sidebar sidebar-secondary" role="navigation">
+        {% include sidebar-secondary.html %}
+      </aside>
+      {% endif %}
+    </main>
+
+    {% include footer.html %}
+  </div>
 </body>
 
 </html>
