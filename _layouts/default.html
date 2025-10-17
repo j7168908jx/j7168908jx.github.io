@@ -31,33 +31,47 @@
 </head>
 
 <body class="theme-icarus">
-  {% assign show_secondary = false %}
-  {% if page.toc == true %}
-  {% assign show_secondary = true %}
-  {% endif %}
-
   <div class="site-shell">
     {% include header.html %}
 
-    <main class="main-frame{% unless show_secondary %} main-frame--no-secondary{% endunless %}">
-      <aside class="sidebar sidebar-primary" role="complementary">
-        {% include sidebar-primary.html %}
-      </aside>
-
-      <div class="main-content" role="main">
-        <article class="card article-card">
-          <div class="card-body">
-            {{ content }}
+    <section class="page-hero">
+      <div class="container">
+        <div class="page-hero__body">
+          {% assign subtitle = page.subtitle | default: site.tagline %}
+          {% if subtitle %}
+          <p class="page-hero__subtitle">{{ subtitle }}</p>
+          {% endif %}
+          <h1 class="page-hero__title">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
+          {% assign hero_description = page.description | default: site.description | default: site.github.project_tagline %}
+          {% if hero_description %}
+          <div class="page-hero__description">
+            {{ hero_description | markdownify }}
           </div>
-        </article>
+          {% endif %}
+          {% if page.date %}
+          <p class="page-meta">{{ page.date | date: "%B %-d, %Y" }}</p>
+          {% endif %}
+        </div>
       </div>
+    </section>
 
-      {% if show_secondary %}
-      <aside class="sidebar sidebar-secondary" role="navigation">
+    <div class="page-layout">
+      <main class="page-main" role="main">
+        <div class="main-content">
+          <article class="card article-card">
+            <div class="card-body">
+              {{ content }}
+            </div>
+          </article>
+        </div>
+      </main>
+      <aside class="page-sidebar" role="complementary">
+        {% include sidebar-primary.html %}
+        {% if page.toc == true %}
         {% include sidebar-secondary.html %}
+        {% endif %}
       </aside>
-      {% endif %}
-    </main>
+    </div>
 
     {% include footer.html %}
   </div>
