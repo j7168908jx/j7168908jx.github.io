@@ -1,13 +1,19 @@
-<header class="page-header" role="banner">
-    <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
-    <h2 class="project-tagline">{{ page.description | default: page.subtitle | default: site.description | default: site.github.project_tagline }}</h2>
-    <h2 class="project-tagline">{{ page.date | date: "%B %-d, %Y" | default: nil }}</h2>
-    <br />
-    {% if site.github.is_project_page %}
-    <a href="{{ site.github.repository_url }}" class="btn">View on GitHub</a>
-    {% endif %}
-    {% if site.show_downloads %}
-    <a href="{{ site.github.zip_url }}" class="btn">Download .zip</a>
-    <a href="{{ site.github.tar_url }}" class="btn">Download .tar.gz</a>
-    {% endif %}
+<header class="site-header" role="banner">
+  <div class="container site-header__inner">
+    <a class="site-brand" href="{{ '/' | relative_url }}">
+      {{ site.title | default: site.github.repository_name }}
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <ul>
+        {% assign current_url = page.url | default: '/' | remove: 'index.html' %}
+        {% for item in site.data.navigation %}
+        {% assign item_url = item.url | relative_url | remove: 'index.html' %}
+        {% assign is_current = current_url == item_url %}
+        <li>
+          <a class="nav-link{% if is_current %} nav-link--active{% endif %}" href="{{ item.url | relative_url }}">{{ item.title }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
 </header>

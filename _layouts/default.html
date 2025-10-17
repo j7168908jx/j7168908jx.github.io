@@ -4,22 +4,19 @@
 <head>
   <meta charset="UTF-8">
 
-  <title>{{ page.title | default: site.title | default: site.github.repository_name }} | {{ page.subtitle | default:
-    site.subtitle | default: site.github.project_tagline }}</title>
+  <title>{{ page.title | default: site.title | default: site.github.repository_name }} | {{ page.subtitle | default: site.subtitle | default: site.github.project_tagline }}</title>
 
   <!-- The SEO tag works for Search Engine https://github.com/jekyll/jekyll-seo-tag -->
   {% seo %}
 
   <!-- also include custom math macros -->
-  <script type="text/javascript" async
-    src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js">
-    </script>
-  <script type="text/javascript" async
-    src="/assets/js/custom-math.js"></script>
+  <script type="text/javascript" async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.min.js"></script>
+  <script type="text/javascript" async src="/assets/js/custom-math.js"></script>
 
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style"
-    type="text/css" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&family=Open+Sans:wght@400;700&display=swap">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#157878">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,28 +30,51 @@
 
 </head>
 
+<body class="theme-icarus">
+  <div class="site-shell">
+    {% include header.html %}
 
-<body>
-  {% include header.html %}
+    <section class="page-hero">
+      <div class="container">
+        <div class="page-hero__body">
+          {% assign subtitle = page.subtitle | default: site.tagline %}
+          {% if subtitle %}
+          <p class="page-hero__subtitle">{{ subtitle }}</p>
+          {% endif %}
+          <h1 class="page-hero__title">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
+          {% assign hero_description = page.description | default: site.description | default: site.github.project_tagline %}
+          {% if hero_description %}
+          <div class="page-hero__description">
+            {{ hero_description | markdownify }}
+          </div>
+          {% endif %}
+          {% if page.date %}
+          <p class="page-meta">{{ page.date | date: "%B %-d, %Y" }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </section>
 
-  <main class="main-frame">
-    <div class="sidebar sidebar-primary" role="navigation">
-      {% include sidebar-primary.html %}
+    <div class="page-layout">
+      <main class="page-main" role="main">
+        <div class="main-content">
+          <article class="card article-card">
+            <div class="card-body">
+              {{ content }}
+            </div>
+          </article>
+        </div>
+      </main>
+      <aside class="page-sidebar" role="complementary">
+        {% include sidebar-primary.html %}
+        {% if page.toc == true %}
+        {% include sidebar-secondary.html %}
+        {% endif %}
+      </aside>
     </div>
-    {% if page.toc == true %}
-    <div class="sidebar sidebar-secondary" role="navigation">
-    {% else %}
-    <div style="display: none" class="sidebar sidebar-secondary" role="navigation">
-    {% endif %}
-      {% include sidebar-secondary.html %}
-    </div>
-    <div id="content" class="main-content" role="main">
-      {{ content }}
-    </div>
-  </main>
 
-  {% include footer.html %}
-
+    {% include footer.html %}
+  </div>
 </body>
 
 </html>

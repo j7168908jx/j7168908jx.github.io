@@ -1,17 +1,37 @@
-<nav class="sidebar-nav" id="sidebar-primary-nav">
+{% assign author_name = site.author.name | default: site.title | default: site.github.owner_name %}
+{% assign author_tagline = site.author.tagline | default: site.description | default: site.github.project_tagline %}
+{% assign author_email = site.author.email | default: site.email %}
 
-    <!-- A beautiful tree fig -->
-    <ul>
-        <li><div class="elegant-tree">
-            <a href="mailto:j7168908jx@gmail.com">
-                <img id="elegant-tree-img" src="/assets/img/four-seasons-tree-illustration.svg" alt="My Favorite Tree">
-            </a>
-        </div></li>
-        <li><a href="/">About</a></li>
-        <li><a href="/posts.html">Posts</a></li>
-        <li><a href="/quant-questions.html">Quant</a></li>
-        <li><a href="/games/index.html">Games</a></li>
-    </ul>
+<div class="widget card">
+  <div class="card-body">
+    <span class="widget-avatar">
+      <img id="elegant-tree-img" src="{{ '/assets/img/four-seasons-tree-illustration.svg' | relative_url }}" alt="Four seasons tree illustration">
+    </span>
+    <h2 class="profile-name">{{ author_name }}</h2>
+    {% if author_tagline %}
+    <p class="profile-tagline">{{ author_tagline }}</p>
+    {% endif %}
+    {% if author_email %}
+    <a class="profile-contact" href="mailto:{{ author_email }}">{{ author_email }}</a>
+    {% endif %}
+    {% if site.github.repository_url %}
+    <a class="widget-cta" href="{{ site.github.repository_url }}">View on GitHub</a>
+    {% endif %}
+  </div>
+</div>
 
-
-</nav>
+<div class="widget card">
+  <div class="card-header">Navigation</div>
+  <div class="card-body">
+    <nav class="widget-nav" id="sidebar-primary-nav" aria-label="Site navigation">
+      <ul class="nav-pills">
+        {% assign current_url = page.url | default: '/' | remove: 'index.html' %}
+        {% for item in site.data.navigation %}
+        {% assign item_url = item.url | relative_url | remove: 'index.html' %}
+        {% assign is_current = current_url == item_url %}
+        <li><a{% if is_current %} class="is-active"{% endif %} href="{{ item.url | relative_url }}">{{ item.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</div>
