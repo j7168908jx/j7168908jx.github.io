@@ -127,6 +127,7 @@ a {
 .project-name {
   margin-top: 0;
   margin-bottom: 0.1rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 
   @include large {
     font-size: 3.25rem;
@@ -144,7 +145,8 @@ a {
 .project-tagline {
   margin-bottom: 2rem;
   font-weight: normal;
-  opacity: 0.7;
+  opacity: 0.9;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 
   @include large {
     font-size: 1.25rem;
@@ -157,6 +159,11 @@ a {
   @include small {
     font-size: 1rem;
   }
+}
+
+.project-tagline-btn {
+  background-color: rgba(0, 0, 0, 0.15);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .main-content {
@@ -182,7 +189,7 @@ a {
     padding: 2rem 1rem;
     font-size: 1rem;
   }
-  
+
   kbd {
     background-color: #fafbfc;
     border: 1px solid #c6cbd1;

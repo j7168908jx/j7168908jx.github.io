@@ -4,6 +4,57 @@
 
 @import 'jekyll-theme-cayman';
 
+.page-header {
+    background: linear-gradient(to bottom, #c8e6ff 0%, #d6e5ff 40%, #ffe9cf 72.5%, #d5e3f7 73.36%, #ffffff 100%);
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative;
+    transition: height 0.2s ease;
+}
+
+.page-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+.page-header-banner {
+    inset: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: 0;
+}
+
+.page-header-banner-half {
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+}
+
+.page-header-banner-left {
+    left: 0;
+}
+
+.page-header-banner-right {
+    right: 0;
+}
+
+.page-header-banner-half img {
+    display: block;
+    height: 100%;
+    max-width: none;
+    position: absolute;
+    top: 0;
+}
+
+.page-header-banner-left img {
+    left: 0;
+}
+
+.page-header-banner-right img {
+    right: 0;
+}
+
 
 .triangle-marker::marker {
     content: '▶ ';

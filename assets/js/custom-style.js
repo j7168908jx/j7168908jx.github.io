@@ -113,8 +113,78 @@ var preventSelectPrompt = function() {
     });
 }
 
+var renderHeaderBanner = function() {
+    "Render the header banner with split image halves.";
+    // Prepare header and image.
+    var header = document.querySelector('.page-header');
+    if (!header) {
+        return;
+    }
+
+    var bannerImage = new Image();
+    bannerImage.src = '/assets/img/header-banner.png?v=' + Date.now().toString();
+
+    bannerImage.onload = function() {
+        "Layout the loaded image whenever geometry changes.";
+        // Prepare image layers.
+        var banner = header.querySelector('.page-header-banner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.className = 'page-header-banner';
+            header.insertBefore(banner, header.firstChild);
+        }
+
+        banner.innerHTML = '';
+
+        var leftHalf = document.createElement('div');
+        leftHalf.className = 'page-header-banner-half page-header-banner-left';
+        banner.appendChild(leftHalf);
+
+        var leftImage = document.createElement('img');
+        leftImage.src = bannerImage.src;
+        leftHalf.appendChild(leftImage);
+
+        var rightHalf = document.createElement('div');
+        rightHalf.className = 'page-header-banner-half page-header-banner-right';
+        banner.appendChild(rightHalf);
+
+        var rightImage = document.createElement('img');
+        rightImage.src = bannerImage.src;
+        rightHalf.appendChild(rightImage);
+
+        var layoutBanner = function() {
+            "Layout the banner at the current header width.";
+            // Measure target geometry.
+            var headerWidth = Math.ceil(header.getBoundingClientRect().width);
+            var naturalWidth = bannerImage.naturalWidth;
+            var naturalHeight = bannerImage.naturalHeight;
+            var desiredHeight = Math.round(Math.max(260, Math.min(520, headerWidth * 0.32)));
+            var maxHeightWithoutCrop = Math.floor(headerWidth * naturalHeight / naturalWidth);
+            var headerHeight = Math.min(desiredHeight, maxHeightWithoutCrop);
+
+            // Resize display box.
+            header.style.height = headerHeight.toString() + 'px';
+
+            // Calculate image placement.
+            var scale = headerHeight / naturalHeight;
+            var imageWidth = naturalWidth * scale;
+            var halfImageWidth = imageWidth / 2;
+
+            // Clip each full image to its visible half.
+            leftHalf.style.width = halfImageWidth.toString() + 'px';
+            rightHalf.style.width = halfImageWidth.toString() + 'px';
+            leftImage.style.width = imageWidth.toString() + 'px';
+            rightImage.style.width = imageWidth.toString() + 'px';
+        };
+
+        layoutBanner();
+        window.addEventListener('resize', layoutBanner);
+    };
+}
+
 onScroll();
 window.addEventListener('scroll', onScroll);
 window.addEventListener("DOMContentLoaded", overlayScrollInit);
 window.addEventListener("DOMContentLoaded", convertliDetailsMarker);
 window.addEventListener("DOMContentLoaded", preventSelectPrompt);
+window.addEventListener("DOMContentLoaded", renderHeaderBanner);
